@@ -1,0 +1,6 @@
+.agent/
+.agents/
+.archive(donot see or touch)/
+node_modules/
+build/
+dist/

@@ -1,6 +1,10 @@
 import { useGameActions } from '../../hooks/useGameActions';
 import { useGameStore } from '../../stores/gameStore';
 import { CARD_TYPE_NAMES } from '../../constants';
+import { lookupCard, lookupEnemyByStats, getPlayerImageUrl } from '../../lib/cardLookup';
+import ActionCard from '../cards/ActionCard';
+import EnemyCard from '../cards/EnemyCard';
+import HeroCard from '../cards/HeroCard';
 import type { GameSession, PlayerState } from '../../lib/types';
 
 interface Props {
@@ -27,6 +31,11 @@ export default function CombatScreen({ session, player }: Props) {
 
   const canAfford = selectedCost <= totalEnergy;
 
+  // Enemy lookup by stats (each enemy has unique maxHp + atk combo)
+  const enemyInfo = lookupEnemyByStats(session.enemyMaxHp, session.enemyBaseAtk);
+  const enemyName = enemyInfo?.name ?? `Enemy (${session.enemyMaxHp} HP)`;
+  const playerImgUrl = getPlayerImageUrl();
+
   const handleDraw = () => {
     drawPhase();
   };
@@ -37,79 +46,52 @@ export default function CombatScreen({ session, player }: Props) {
 
   return (
     <>
-      {/* Enemy Panel */}
-      <div className="panel">
-        <div className="panel-title">Enemy</div>
-        <div className="stat-row">
-          <span className="stat-label">👾 Type</span>
-          <span className="stat-value">{session.enemyType}</span>
+      {/* Battle Area: Enemy + Player cards side by side */}
+      <div style={{ display: 'flex', gap: '24px', justifyContent: 'center', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+        {/* Enemy Card */}
+        <div style={{ position: 'relative' }}>
+          <EnemyCard
+            name={enemyName}
+            hp={session.enemyHp}
+            maxHp={session.enemyMaxHp}
+            atk={session.enemyAtk}
+            nodeType={enemyInfo?.nodeType}
+            floor={enemyInfo?.floor ?? session.floor}
+            imageUrl={enemyInfo?.imageUrl}
+            poisonStacks={session.poisonStacks}
+            weakenStacks={session.weakenStacks}
+            weakenTurns={session.weakenTurns}
+          />
         </div>
-        <div className="stat-row">
-          <span className="stat-label">❤️ HP</span>
-          <span className="stat-value hp">{session.enemyHp} / {session.enemyMaxHp}</span>
-        </div>
-        <div className="hp-bar" style={{ marginBottom: 8 }}>
-          <div className="bar-container">
-            <div className="bar-fill" style={{ width: `${session.enemyMaxHp > 0 ? (session.enemyHp / session.enemyMaxHp) * 100 : 0}%` }} />
-            <div className="bar-label">{session.enemyHp} / {session.enemyMaxHp}</div>
-          </div>
-        </div>
-        <div className="stat-row">
-          <span className="stat-label">⚔️ ATK</span>
-          <span className="stat-value" style={{ color: 'var(--danger)' }}>{session.enemyAtk}</span>
-        </div>
-        {session.poisonStacks > 0 && (
-          <div className="stat-row">
-            <span className="stat-label">☠️ Poison</span>
-            <span className="stat-value" style={{ color: 'var(--success)' }}>{session.poisonStacks}</span>
-          </div>
-        )}
-        {session.weakenStacks > 0 && (
-          <div className="stat-row">
-            <span className="stat-label">🔻 Weakened</span>
-            <span className="stat-value" style={{ color: 'var(--warning)' }}>-{session.weakenStacks} ATK ({session.weakenTurns}t)</span>
-          </div>
+
+        {/* Player Card */}
+        {player && (
+          <HeroCard
+            name="Adventurer"
+            hp={player.health.current}
+            maxHp={player.health.max}
+            energy={totalEnergy}
+            maxEnergy={maxEnergy}
+            gold={player.gold}
+            block={session.block}
+            atkBonus={session.atkBonus}
+            defBonus={session.defBonus}
+            imageUrl={playerImgUrl}
+          />
         )}
       </div>
 
-      {/* Player Stats */}
-      {player && (
-        <div className="panel">
-          <div className="panel-title">Player — Turn {session.turnCount}</div>
-          <div className="stat-row">
-            <span className="stat-label">❤️ HP</span>
-            <span className="stat-value hp">{player.health.current} / {player.health.max}</span>
-          </div>
-          <div className="hp-bar" style={{ marginBottom: 8 }}>
-            <div className="bar-container">
-              <div className="bar-fill" style={{ width: `${(player.health.current / player.health.max) * 100}%` }} />
-              <div className="bar-label">{player.health.current} / {player.health.max}</div>
-            </div>
-          </div>
-          <div className="stat-row">
-            <span className="stat-label">⚡ Energy</span>
-            <span className="stat-value energy">{totalEnergy} / {maxEnergy}</span>
-          </div>
-          {session.block > 0 && (
-            <div className="stat-row">
-              <span className="stat-label">🛡️ Block</span>
-              <span className="stat-value block">{session.block}</span>
-            </div>
+      {/* Turn info */}
+      <div className="panel" style={{ textAlign: 'center' }}>
+        <span className="panel-title" style={{ margin: 0 }}>
+          ⚔️ Turn {session.turnCount}
+          {player && (
+            <span style={{ marginLeft: 12, color: 'var(--text-secondary)', fontFamily: "'Crimson Pro', serif", fontSize: '0.7rem', fontWeight: 400, letterSpacing: '0.02em' }}>
+              Deck: {player.deck.drawPile.length} draw · {hand.length} hand · {player.deck.discardPile.length} discard
+            </span>
           )}
-          {session.atkBonus > 0 && (
-            <div className="stat-row">
-              <span className="stat-label">⚔️ ATK Bonus</span>
-              <span className="stat-value">+{session.atkBonus}</span>
-            </div>
-          )}
-          {session.defBonus > 0 && (
-            <div className="stat-row">
-              <span className="stat-label">🛡️ DEF Bonus</span>
-              <span className="stat-value">+{session.defBonus}</span>
-            </div>
-          )}
-        </div>
-      )}
+        </span>
+      </div>
 
       {/* Hand / Actions */}
       <div className="panel">
@@ -117,11 +99,11 @@ export default function CombatScreen({ session, player }: Props) {
           /* PHASE 1: Draw cards */
           <>
             <div className="panel-title">🃏 Start of Turn</div>
-            <p style={{ color: 'var(--text-muted)', fontSize: 13, marginBottom: 16 }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: 13, marginBottom: 16, fontFamily: "'Crimson Pro', serif" }}>
               Draw cards from your deck to begin your turn.
             </p>
             <button
-              className="btn btn-accent btn-full btn-lg"
+              className="btn btn-primary btn-full btn-lg anim-pulse-glow"
               onClick={handleDraw}
               disabled={isLoading}
             >
@@ -133,37 +115,41 @@ export default function CombatScreen({ session, player }: Props) {
           <>
             <div className="section-header">
               <span className="panel-title" style={{ margin: 0 }}>
-                Hand ({hand.length} cards) · Cost: {selectedCost} / {totalEnergy} ⚡
+                Hand ({hand.length}) · Cost: {selectedCost} / {totalEnergy} ⚡
               </span>
             </div>
 
-            <div className="card-hand">
+            <div className="card-row">
               {hand.map((card, idx) => {
                 const isSelected = selectedCards.includes(idx);
-                const typeClass = card.cardType === 0 ? 'type-atk' : card.cardType === 1 ? 'type-skill' : 'type-power';
+                const cardInfo = lookupCard(card.name);
+                const typeName = CARD_TYPE_NAMES[card.cardType] ?? 'ATK';
+
                 return (
-                  <div
+                  <ActionCard
                     key={idx}
-                    className={`game-card ${typeClass} ${isSelected ? 'selected' : ''}`}
+                    name={card.name}
+                    cost={card.cost}
+                    cardType={card.cardType}
+                    cardTypeName={typeName}
+                    description={cardInfo?.description ?? `${typeName} · Val: ${Number(card.value)}`}
+                    value={Number(card.value)}
+                    imageUrl={cardInfo?.imageUrl}
+                    selected={isSelected}
                     onClick={() => toggleCard(idx)}
-                  >
-                    <div className="card-name">{card.name}</div>
-                    <div className="card-cost">⚡ {card.cost}</div>
-                    <div className="card-effect">
-                      {CARD_TYPE_NAMES[card.cardType]} · Val: {Number(card.value)}
-                    </div>
-                  </div>
+                    animationDelay={idx * 150}
+                  />
                 );
               })}
             </div>
 
             {!canAfford && (
-              <p style={{ color: 'var(--danger)', fontSize: 12, marginTop: 8 }}>
+              <p style={{ color: 'var(--danger-light)', fontSize: 12, marginTop: 12, textAlign: 'center', fontFamily: "'Crimson Pro', serif" }}>
                 ⚠️ Not enough energy! Deselect some cards.
               </p>
             )}
 
-            <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
+            <div style={{ marginTop: 16 }}>
               <button
                 className="btn btn-danger btn-full btn-lg"
                 onClick={handleEndTurn}
@@ -180,13 +166,6 @@ export default function CombatScreen({ session, player }: Props) {
           </>
         )}
       </div>
-
-      {/* Deck info */}
-      {player && (
-        <div className="panel" style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-          Draw pile: {player.deck.drawPile.length} · Hand: {hand.length} · Discard: {player.deck.discardPile.length}
-        </div>
-      )}
     </>
   );
 }

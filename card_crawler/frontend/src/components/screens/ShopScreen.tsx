@@ -1,7 +1,20 @@
 import { useGameActions } from '../../hooks/useGameActions';
 import { useGameStore } from '../../stores/gameStore';
-import { SHOP_CARDS, RELIC_NAMES } from '../../constants';
+import { SHOP_CARDS, CARD_TYPE_NAMES } from '../../constants';
+import { lookupCard, lookupRelic } from '../../lib/cardLookup';
+import ActionCard from '../cards/ActionCard';
+import RelicCard from '../cards/RelicCard';
 import type { GameSession, PlayerState } from '../../lib/types';
+
+// Relic data for the shop
+const RELIC_LIST = [
+  { type: 0, name: 'Whetstone', effect: '+2 ATK', cost: 100 },
+  { type: 1, name: 'Iron Ring', effect: '+2 DEF', cost: 100 },
+  { type: 2, name: 'Energy Potion', effect: '+1 Energy', cost: 100 },
+  { type: 3, name: 'Healing Crystal', effect: '+5 HP after combat', cost: 100 },
+  { type: 4, name: 'Lucky Coin', effect: '+15 gold', cost: 100 },
+  { type: 5, name: 'Thick Skin', effect: '+10 max HP', cost: 100 },
+];
 
 interface Props {
   session: GameSession;
@@ -17,79 +30,86 @@ export default function ShopScreen({ session, player }: Props) {
   return (
     <>
       {/* Gold display */}
-      <div className="panel">
-        <div className="panel-title">🛒 Shop</div>
-        <div className="stat-row">
-          <span className="stat-label">💰 Your Gold</span>
-          <span className="stat-value gold">{gold}</span>
+      <div className="panel anim-slide-up">
+        <div className="section-header">
+          <span className="section-title">🛒 Shop</span>
+          <span className="stat-value gold" style={{ fontSize: '1.1rem' }}>💰 {gold} Gold</span>
         </div>
       </div>
 
       {/* Buy Cards (60 gold each) */}
-      <div className="panel">
-        <div className="panel-title">Cards (60 Gold each)</div>
-        <div className="item-grid">
-          {SHOP_CARDS.map((card) => (
-            <div
-              key={card.index}
-              className="item-card"
-              onClick={() => !isLoading && gold >= 60 && shopAction(0, card.index)}
-              style={{
-                cursor: isLoading || gold < 60 ? 'not-allowed' : 'pointer',
-                opacity: gold < 60 ? 0.5 : 1,
-              }}
-            >
-              <div className="item-name">{card.name}</div>
-              <div className="item-desc">⚡ {card.cost} · {card.description}</div>
-              <div className="item-price">💰 60</div>
-            </div>
-          ))}
+      <div className="panel anim-slide-up" style={{ animationDelay: '100ms' }}>
+        <div className="panel-title">Cards — 60 Gold Each</div>
+        <div className="card-row">
+          {SHOP_CARDS.map((card) => {
+            const cardInfo = lookupCard(card.name);
+            const typeName = CARD_TYPE_NAMES[card.cardType] ?? 'ATK';
+            const canBuy = gold >= 60 && !isLoading;
+            return (
+              <ActionCard
+                key={card.index}
+                name={card.name}
+                cost={card.cost}
+                cardType={card.cardType}
+                cardTypeName={typeName}
+                description={cardInfo?.description ?? card.description}
+                value={card.value}
+                imageUrl={cardInfo?.imageUrl}
+                compact
+                onClick={() => canBuy && shopAction(0, card.index)}
+                className={!canBuy ? 'shop-disabled' : ''}
+              />
+            );
+          })}
         </div>
       </div>
 
       {/* Remove Card (50 gold) */}
       {player && player.deck.drawPile.length > 0 && (
-        <div className="panel">
-          <div className="panel-title">Remove a Card (50 Gold)</div>
-          <div className="item-grid">
-            {player.deck.drawPile.map((card, idx) => (
-              <div
-                key={idx}
-                className="item-card"
-                onClick={() => !isLoading && gold >= 50 && shopAction(1, idx)}
-                style={{
-                  cursor: isLoading || gold < 50 ? 'not-allowed' : 'pointer',
-                  opacity: gold < 50 ? 0.5 : 1,
-                }}
-              >
-                <div className="item-name">{card.name}</div>
-                <div className="item-desc">⚡ {card.cost}</div>
-                <div className="item-price">💰 50</div>
-              </div>
-            ))}
+        <div className="panel anim-slide-up" style={{ animationDelay: '200ms' }}>
+          <div className="panel-title">Remove a Card — 50 Gold</div>
+          <div className="card-row">
+            {player.deck.drawPile.map((card, idx) => {
+              const cardInfo = lookupCard(card.name);
+              const typeName = CARD_TYPE_NAMES[card.cardType] ?? 'ATK';
+              const canRemove = gold >= 50 && !isLoading;
+              return (
+                <ActionCard
+                  key={idx}
+                  name={card.name}
+                  cost={card.cost}
+                  cardType={card.cardType}
+                  cardTypeName={typeName}
+                  description={cardInfo?.description ?? `Remove from deck`}
+                  value={Number(card.value)}
+                  imageUrl={cardInfo?.imageUrl}
+                  compact
+                  onClick={() => canRemove && shopAction(1, idx)}
+                  className={!canRemove ? 'shop-disabled' : ''}
+                />
+              );
+            })}
           </div>
         </div>
       )}
 
       {/* Buy Relics (100 gold each) */}
-      <div className="panel">
-        <div className="panel-title">Relics (100 Gold each)</div>
-        <div className="item-grid">
-          {Object.entries(RELIC_NAMES).map(([typeStr, name]) => {
-            const relicType = Number(typeStr);
+      <div className="panel anim-slide-up" style={{ animationDelay: '300ms' }}>
+        <div className="panel-title">Relics — 100 Gold Each</div>
+        <div className="card-row">
+          {RELIC_LIST.map((relic) => {
+            const relicInfo = lookupRelic(relic.name);
+            const canBuy = gold >= 100 && !isLoading;
             return (
-              <div
-                key={relicType}
-                className="item-card"
-                onClick={() => !isLoading && gold >= 100 && shopAction(2, relicType)}
-                style={{
-                  cursor: isLoading || gold < 100 ? 'not-allowed' : 'pointer',
-                  opacity: gold < 100 ? 0.5 : 1,
-                }}
-              >
-                <div className="item-name">🔮 {name}</div>
-                <div className="item-price">💰 100</div>
-              </div>
+              <RelicCard
+                key={relic.type}
+                name={relic.name}
+                effect={relic.effect}
+                cost={relic.cost}
+                imageUrl={relicInfo?.imageUrl}
+                onClick={() => canBuy && shopAction(2, relic.type)}
+                disabled={!canBuy}
+              />
             );
           })}
         </div>

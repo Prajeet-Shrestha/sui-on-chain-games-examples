@@ -1,29 +1,64 @@
+/* ═══════════════════════════════════════════════
+   Card Crawler — Design System
+   Dark Fantasy / Mythic Card Game aesthetic
+   Ported from cards.html + gameplay additions
+   ═══════════════════════════════════════════════ */
+
 :root {
-  --bg-primary: #0f0f13;
-  --bg-secondary: #1a1a24;
-  --bg-card: #242435;
-  --bg-hover: #2e2e42;
-  --text-primary: #e8e8f0;
-  --text-secondary: #9898b0;
-  --text-muted: #606078;
-  --accent: #6c63ff;
-  --accent-hover: #8b84ff;
-  --danger: #ff4757;
-  --success: #2ed573;
+  /* ─── cards.html palette ───────────────────── */
+  --gold: #d4a845;
+  --gold-bright: #f0d060;
+  --gold-dark: #8b6914;
+  --legendary-glow: #ff8c00;
+  --epic-purple: #a335ee;
+  --rare-blue: #0070dd;
+  --blood-red: #cc2200;
+  --ember: #ff4500;
+  --bg-deep: #08080e;
+
+  /* ─── Gameplay palette ─────────────────────── */
+  --bg-primary: #08080e;
+  --bg-secondary: #14121a;
+  --bg-card: #1c1a24;
+  --bg-hover: #28222e;
+  --text-primary: #e0d6c2;
+  --text-secondary: #9a9080;
+  --text-muted: #5a5040;
+
+  --accent: #d4a845;
+  --accent-hover: #f0d060;
+  --danger: #cc2200;
+  --danger-light: #ff4500;
+  --success: #66bb6a;
   --warning: #ffa502;
-  --gold: #ffd700;
-  --hp-bar: #ff4757;
-  --hp-bg: #3a1520;
-  --energy-bar: #3498db;
-  --energy-bg: #152535;
+  --gold-color: #f0d060;
+
+  --hp-bar: #cc2200;
+  --hp-bg: #2a0a08;
+  --energy-bar: #1976d2;
+  --energy-bg: #0a1a2e;
   --block-color: #74b9ff;
-  --atk-color: #ff6b6b;
-  --skill-color: #74b9ff;
-  --power-color: #ffd700;
-  --border: #2a2a3d;
+
+  /* ─── Type colors (ATK / SKILL / POWER) ──── */
+  --atk-color: #ff5722;
+  --atk-border: rgba(255,87,34,0.35);
+  --atk-bg: linear-gradient(170deg, #1a0808, #120404, #0a0101);
+
+  --skill-color: #42a5f5;
+  --skill-border: rgba(66,165,245,0.35);
+  --skill-bg: linear-gradient(170deg, #081a1a, #040f12, #01080a);
+
+  --power-color: #ab47bc;
+  --power-border: rgba(171,71,188,0.35);
+  --power-bg: linear-gradient(170deg, #150820, #0c0414, #06010a);
+
+  --border: rgba(212,168,69,0.12);
+  --border-subtle: rgba(212,168,69,0.06);
   --radius: 8px;
-  --radius-lg: 12px;
-  font-family: 'Inter', 'Segoe UI', sans-serif;
+  --radius-lg: 14px;
+
+  /* ─── Fonts ──────────────────────────────── */
+  font-family: 'Crimson Pro', serif;
 }
 
 * {
@@ -35,29 +70,56 @@
 body {
   background: var(--bg-primary);
   color: var(--text-primary);
+  font-family: 'Crimson Pro', serif;
   min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Dark fantasy ambient background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(204, 34, 0, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 80%, rgba(255, 140, 0, 0.03) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 50%, rgba(20, 20, 35, 1) 0%, rgba(8, 8, 14, 1) 100%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 #root {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 1;
 }
 
-/* ─── Layout ───────────────────────────── */
+/* ═══════════════════════════════════════════════
+   Layout
+   ═══════════════════════════════════════════════ */
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 12px 20px;
-  background: var(--bg-secondary);
+  background: linear-gradient(180deg, rgba(20,18,26,0.98), rgba(8,8,14,0.95));
   border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(8px);
 }
 
 .header-title {
+  font-family: 'Cinzel Decorative', serif;
   font-size: 18px;
   font-weight: 700;
-  letter-spacing: 1px;
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-bright), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.08em;
+  filter: drop-shadow(0 1px 4px rgba(212, 168, 69, 0.2));
 }
 
 .header-stats {
@@ -65,12 +127,16 @@ body {
   gap: 16px;
   font-size: 13px;
   color: var(--text-secondary);
+  font-family: 'Cinzel', serif;
+  align-items: center;
 }
 
 .header-stat {
   display: flex;
   gap: 4px;
   align-items: center;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
 }
 
 .main-content {
@@ -81,40 +147,52 @@ body {
   justify-content: center;
   padding: 24px;
   gap: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
 }
 
-/* ─── Cards ────────────────────────────── */
+/* ═══════════════════════════════════════════════
+   Panels (card-like containers)
+   ═══════════════════════════════════════════════ */
+
 .panel {
-  background: var(--bg-secondary);
+  background: linear-gradient(160deg, #1e1a16, #14121a, #0e0c0a);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 20px;
   width: 100%;
-  max-width: 600px;
+  max-width: 700px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
 }
 
 .panel-title {
-  font-size: 16px;
-  font-weight: 600;
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 700;
   margin-bottom: 12px;
-  color: var(--text-secondary);
+  color: var(--gold);
   text-transform: uppercase;
-  letter-spacing: 1px;
-  font-size: 12px;
+  letter-spacing: 0.12em;
 }
 
-/* ─── Buttons ──────────────────────────── */
+/* ═══════════════════════════════════════════════
+   Buttons
+   ═══════════════════════════════════════════════ */
+
 .btn {
   padding: 10px 20px;
   border: none;
   border-radius: var(--radius);
   font-size: 14px;
   font-weight: 600;
+  font-family: 'Cinzel', serif;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.25s cubic-bezier(0.23, 1, 0.32, 1);
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  letter-spacing: 0.04em;
 }
 
 .btn:disabled {
@@ -123,30 +201,37 @@ body {
 }
 
 .btn-primary {
-  background: var(--accent);
-  color: white;
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  color: #0f0f13;
+  border: 1px solid rgba(212,168,69,0.4);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--accent-hover);
+  background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+  box-shadow: 0 0 20px rgba(212,168,69,0.3);
+  transform: translateY(-1px);
 }
 
 .btn-danger {
-  background: var(--danger);
-  color: white;
+  background: linear-gradient(135deg, #8b0000, var(--blood-red));
+  color: #ffd6d0;
+  border: 1px solid rgba(204,34,0,0.4);
 }
 
 .btn-danger:hover:not(:disabled) {
-  background: #ff6b7d;
+  background: linear-gradient(135deg, var(--blood-red), var(--ember));
+  box-shadow: 0 0 20px rgba(204,34,0,0.3);
+  transform: translateY(-1px);
 }
 
 .btn-success {
-  background: var(--success);
+  background: linear-gradient(135deg, #2e7d32, var(--success));
   color: #0f0f13;
 }
 
 .btn-success:hover:not(:disabled) {
-  background: #55e08d;
+  background: linear-gradient(135deg, var(--success), #81c784);
+  box-shadow: 0 0 15px rgba(102,187,106,0.3);
 }
 
 .btn-ghost {
@@ -157,16 +242,19 @@ body {
 
 .btn-ghost:hover:not(:disabled) {
   background: var(--bg-hover);
-  color: var(--text-primary);
+  color: var(--gold);
+  border-color: rgba(212,168,69,0.3);
 }
 
 .btn-gold {
-  background: linear-gradient(135deg, #b8860b, #daa520);
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
   color: #0f0f13;
+  border: 1px solid rgba(212,168,69,0.4);
 }
 
 .btn-gold:hover:not(:disabled) {
-  background: linear-gradient(135deg, #daa520, #ffd700);
+  background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+  box-shadow: 0 0 20px rgba(240,208,96,0.3);
 }
 
 .btn-full {
@@ -179,19 +267,23 @@ body {
   font-size: 16px;
 }
 
-/* ─── Progress Bars ────────────────────── */
+/* ═══════════════════════════════════════════════
+   Progress Bars (HP, Energy)
+   ═══════════════════════════════════════════════ */
+
 .bar-container {
   width: 100%;
   height: 20px;
   border-radius: 10px;
   overflow: hidden;
   position: relative;
+  border: 1px solid rgba(255,255,255,0.05);
 }
 
 .bar-fill {
   height: 100%;
   border-radius: 10px;
-  transition: width 0.3s ease;
+  transition: width 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .bar-label {
@@ -203,23 +295,39 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
   font-weight: 700;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.7);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  letter-spacing: 0.05em;
 }
 
-.hp-bar .bar-container { background: var(--hp-bg); }
-.hp-bar .bar-fill { background: linear-gradient(90deg, var(--danger), #ff6b7d); }
+.hp-bar .bar-container {
+  background: var(--hp-bg);
+}
+.hp-bar .bar-fill {
+  background: linear-gradient(90deg, #8b0000, var(--blood-red), #e63900);
+  box-shadow: 0 0 8px rgba(204, 34, 0, 0.3);
+}
 
-.energy-bar .bar-container { background: var(--energy-bg); }
-.energy-bar .bar-fill { background: linear-gradient(90deg, var(--energy-bar), #5dade2); }
+.energy-bar .bar-container {
+  background: var(--energy-bg);
+}
+.energy-bar .bar-fill {
+  background: linear-gradient(90deg, #0d47a1, #1976d2, #42a5f5);
+  box-shadow: 0 0 8px rgba(25, 118, 210, 0.3);
+}
 
-/* ─── Game Cards ──────────────────────── */
+/* ═══════════════════════════════════════════════
+   Game Cards (hand — basic fallback, overridden by cards.css)
+   ═══════════════════════════════════════════════ */
+
 .card-hand {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 16px;
   justify-content: center;
+  perspective: 1200px;
 }
 
 .game-card {
@@ -229,19 +337,21 @@ body {
   padding: 10px;
   width: 120px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
   text-align: center;
 }
 
 .game-card:hover {
-  border-color: var(--accent);
-  transform: translateY(-2px);
+  border-color: var(--gold);
+  transform: translateY(-4px);
+  filter: brightness(1.08);
 }
 
 .game-card.selected {
   border-color: var(--success);
-  background: rgba(46, 213, 115, 0.1);
-  transform: translateY(-4px);
+  background: rgba(46, 213, 115, 0.08);
+  transform: translateY(-6px);
+  box-shadow: 0 0 15px rgba(46,213,115,0.2);
 }
 
 .game-card.type-atk { border-top: 3px solid var(--atk-color); }
@@ -249,23 +359,30 @@ body {
 .game-card.type-power { border-top: 3px solid var(--power-color); }
 
 .card-name {
+  font-family: 'Cinzel', serif;
   font-size: 12px;
   font-weight: 700;
   margin-bottom: 4px;
+  color: var(--gold-bright);
 }
 
 .card-cost {
   font-size: 11px;
   color: var(--energy-bar);
   margin-bottom: 4px;
+  font-family: 'Cinzel', serif;
 }
 
 .card-effect {
   font-size: 10px;
   color: var(--text-secondary);
+  font-family: 'Crimson Pro', serif;
 }
 
-/* ─── Map Nodes ────────────────────────── */
+/* ═══════════════════════════════════════════════
+   Map Nodes
+   ═══════════════════════════════════════════════ */
+
 .node-list {
   display: flex;
   flex-direction: column;
@@ -276,17 +393,20 @@ body {
   padding: 14px 16px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: var(--bg-card);
+  background: linear-gradient(160deg, #1e1a16, #14121a);
   color: var(--text-primary);
   cursor: pointer;
   text-align: left;
   font-size: 14px;
-  transition: all 0.15s ease;
+  font-family: 'Crimson Pro', serif;
+  transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .node-btn:hover:not(:disabled) {
   background: var(--bg-hover);
-  border-color: var(--accent);
+  border-color: rgba(212,168,69,0.3);
+  transform: translateX(4px);
+  box-shadow: 0 0 15px rgba(212,168,69,0.1);
 }
 
 .node-btn.done {
@@ -294,13 +414,17 @@ body {
   cursor: not-allowed;
 }
 
-/* ─── Stats ────────────────────────────── */
+/* ═══════════════════════════════════════════════
+   Stats
+   ═══════════════════════════════════════════════ */
+
 .stat-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 6px 0;
   font-size: 14px;
+  font-family: 'Crimson Pro', serif;
 }
 
 .stat-label {
@@ -309,40 +433,52 @@ body {
 
 .stat-value {
   font-weight: 600;
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
 }
 
-.stat-value.hp { color: var(--danger); }
+.stat-value.hp { color: var(--blood-red); }
 .stat-value.energy { color: var(--energy-bar); }
-.stat-value.gold { color: var(--gold); }
+.stat-value.gold { color: var(--gold-bright); }
 .stat-value.block { color: var(--block-color); }
 
-/* ─── Error / Status ───────────────────── */
+/* ═══════════════════════════════════════════════
+   Error / Status / Loading
+   ═══════════════════════════════════════════════ */
+
 .error-banner {
-  background: rgba(255, 71, 87, 0.15);
-  border: 1px solid rgba(255, 71, 87, 0.3);
+  background: rgba(204, 34, 0, 0.1);
+  border: 1px solid rgba(204, 34, 0, 0.3);
   padding: 10px 16px;
   border-radius: var(--radius);
-  color: var(--danger);
+  color: var(--danger-light);
   font-size: 13px;
   width: 100%;
-  max-width: 600px;
+  max-width: 700px;
   text-align: center;
+  font-family: 'Crimson Pro', serif;
 }
 
 .loading-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 15, 19, 0.7);
+  background: rgba(8, 8, 14, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 100;
+  font-family: 'Cinzel', serif;
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  backdrop-filter: blur(4px);
 }
 
-/* ─── Section Headers ──────────────────── */
+/* ═══════════════════════════════════════════════
+   Section Headers
+   ═══════════════════════════════════════════════ */
+
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -350,75 +486,169 @@ body {
   margin-bottom: 12px;
 }
 
-/* ─── Shop / Reward Grids ──────────────── */
+.section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--gold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════════
+   Shop / Reward Grids
+   ═══════════════════════════════════════════════ */
+
 .item-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 8px;
+  gap: 10px;
 }
 
 .item-card {
-  background: var(--bg-card);
+  background: linear-gradient(160deg, #1e1a16, #12100c);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 12px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
   text-align: center;
 }
 
 .item-card:hover {
-  border-color: var(--accent);
+  border-color: rgba(212,168,69,0.3);
+  box-shadow: 0 0 15px rgba(212,168,69,0.1);
+  transform: translateY(-2px);
 }
 
 .item-name {
+  font-family: 'Cinzel', serif;
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 4px;
+  color: var(--gold-bright);
 }
 
 .item-desc {
   font-size: 11px;
   color: var(--text-secondary);
   margin-bottom: 6px;
+  font-family: 'Crimson Pro', serif;
 }
 
 .item-price {
+  font-family: 'Cinzel', serif;
   font-size: 12px;
-  color: var(--gold);
+  color: var(--gold-bright);
   font-weight: 600;
 }
 
-/* ─── Start Screen ─────────────────────── */
+/* ═══════════════════════════════════════════════
+   Start Screen
+   ═══════════════════════════════════════════════ */
+
 .start-screen {
   text-align: center;
 }
 
 .start-screen h1 {
-  font-size: 36px;
-  font-weight: 800;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.8rem, 4.5vw, 3rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-bright), var(--gold), var(--gold-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.08em;
+  filter: drop-shadow(0 2px 8px rgba(212, 168, 69, 0.3));
   margin-bottom: 8px;
-  letter-spacing: 2px;
 }
 
 .start-screen p {
   color: var(--text-secondary);
   margin-bottom: 32px;
   font-size: 15px;
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
 }
 
-/* ─── Game Over ────────────────────────── */
+/* ═══════════════════════════════════════════════
+   Game Over
+   ═══════════════════════════════════════════════ */
+
 .result-banner {
+  font-family: 'Cinzel Decorative', serif;
   font-size: 32px;
-  font-weight: 800;
+  font-weight: 900;
   text-align: center;
   padding: 20px;
+  letter-spacing: 0.06em;
 }
 
 .result-banner.win {
-  color: var(--success);
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-bright));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 8px rgba(212, 168, 69, 0.4));
 }
 
 .result-banner.lose {
-  color: var(--danger);
+  color: var(--blood-red);
+  text-shadow: 0 0 20px rgba(204, 34, 0, 0.3);
+}
+
+/* ═══════════════════════════════════════════════
+   Utility Classes
+   ═══════════════════════════════════════════════ */
+
+.gold-text {
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-bright), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.divider {
+  width: 180px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dark), transparent);
+  margin: 16px auto;
+}
+
+/* ─── Damage/Heal flash overlays ───────────── */
+.damage-flash {
+  animation: flashRed 0.3s ease;
+}
+
+.heal-flash {
+  animation: flashGreen 0.3s ease;
+}
+
+.block-flash {
+  animation: flashBlue 0.3s ease;
+}
+
+/* ─── Card animating out ───────────────────── */
+.animating-out {
+  animation: cardPlay 0.5s ease forwards;
+  pointer-events: none;
+}
+
+/* ─── Screen transition wrapper ────────────── */
+.screen-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.screen-wrapper.screen-enter {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.screen-wrapper.screen-exit {
+  animation: fadeOut 0.2s ease forwards;
 }

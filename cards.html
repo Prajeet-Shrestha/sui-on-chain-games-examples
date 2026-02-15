@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mythic Cards — Dark Knight Collection</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=MedievalSharp&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #d4a845;
+    --gold-bright: #f0d060;
+    --gold-dark: #8b6914;
+    --legendary-glow: #ff8c00;
+    --epic-purple: #a335ee;
+    --rare-blue: #0070dd;
+    --blood-red: #cc2200;
+    --ember: #ff4500;
+    --bg-deep: #08080e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg-deep);
+    color: #e0d6c2;
+    font-family: 'Crimson Pro', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(204, 34, 0, 0.04) 0%, transparent 60%),
+      radial-gradient(ellipse at 70% 80%, rgba(255, 140, 0, 0.03) 0%, transparent 60%),
+      radial-gradient(ellipse at 50% 50%, rgba(20, 20, 35, 1) 0%, rgba(8, 8, 14, 1) 100%);
+    pointer-events: none;
+  }
+
+  .page-wrapper {
+    position: relative;
+    z-index: 1;
+    padding: 30px 20px 60px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .page-header h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.8rem, 4.5vw, 3.2rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, #8b6914, #d4a845, #f0d060, #d4a845, #8b6914);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.08em;
+    filter: drop-shadow(0 2px 8px rgba(212, 168, 69, 0.3));
+  }
+
+  .page-header .sub {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    color: #5a5040;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  .divider {
+    width: 180px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-dark), transparent);
+    margin: 16px auto 0;
+  }
+
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    text-align: center;
+    margin: 60px 0 10px;
+    color: var(--gold);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .section-sub {
+    text-align: center;
+    font-style: italic;
+    color: #4a4035;
+    margin-bottom: 36px;
+    font-size: 0.85rem;
+  }
+
+  .card-row {
+    display: flex;
+    justify-content: center;
+    gap: 36px;
+    flex-wrap: wrap;
+    perspective: 1200px;
+  }
+
+  /* === SHARED CARD HOVER === */
+  .card-wrap {
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.45s cubic-bezier(0.23, 1, 0.32, 1), filter 0.3s;
+  }
+
+  .card-wrap:hover {
+    transform: translateY(-18px) scale(1.04);
+    z-index: 10;
+    filter: brightness(1.08);
+  }
+
+  .card-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.06) 55%, transparent 70%);
+    background-size: 300% 100%;
+    background-position: 200% 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 50;
+  }
+
+  .card-wrap:hover::after {
+    opacity: 1;
+    animation: holoShine 1.2s ease forwards;
+  }
+
+  @keyframes holoShine {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+  }
+
+  /* ============================================
+     1. HEARTHSTONE MINION CARD
+     ============================================ */
+  .hs-card {
+    width: 300px;
+    height: 430px;
+    border-radius: 16px;
+  }
+
+  .hs-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(160deg, #2e2418, #1c1610, #12100c);
+    border: 2.5px solid rgba(255,140,0,0.4);
+    box-shadow:
+      0 0 40px rgba(255,140,0,0.15),
+      0 0 80px rgba(255,140,0,0.05),
+      0 8px 32px rgba(0,0,0,0.7),
+      inset 0 1px 0 rgba(255,200,100,0.08);
+  }
+
+  .hs-frame {
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .hs-frame::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px solid rgba(212, 168, 69, 0.12);
+    border-radius: 12px;
+  }
+
+  .hs-corner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-color: rgba(212, 168, 69, 0.35);
+    border-style: solid;
+    z-index: 11;
+  }
+  .hs-corner.tl { top: 8px; left: 8px; border-width: 2px 0 0 2px; border-radius: 4px 0 0 0; }
+  .hs-corner.tr { top: 8px; right: 8px; border-width: 2px 2px 0 0; border-radius: 0 4px 0 0; }
+  .hs-corner.bl { bottom: 8px; left: 8px; border-width: 0 0 2px 2px; border-radius: 0 0 0 4px; }
+  .hs-corner.br { bottom: 8px; right: 8px; border-width: 0 2px 2px 0; border-radius: 0 0 4px 0; }
+
+  .hs-mana {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 52px;
+    height: 52px;
+    z-index: 20;
+  }
+
+  .hs-mana-gem {
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 35% 30%, #7cb3ff, #2266cc, #0a2e6b);
+    clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .hs-mana-gem::before {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    background: radial-gradient(circle at 35% 30%, #90caf9, #1e88e5, #0d47a1);
+    clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+  }
+
+  .hs-mana-num {
+    position: relative;
+    z-index: 2;
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 1.6rem;
+    color: #fff;
+    text-shadow: 0 0 12px rgba(130, 200, 255, 0.9), 0 2px 4px rgba(0,0,0,0.6);
+  }
+
+  .hs-art {
+    width: calc(100% - 28px);
+    height: 280px;
+    margin: 14px auto 0;
+    border-radius: 10px 10px 50% 50% / 10px 10px 12% 12%;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid rgba(212, 168, 69, 0.35);
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+  }
+
+  .hs-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 15%;
+    display: block;
+  }
+
+  .hs-art::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 0%, transparent 60%, rgba(0,0,0,0.4) 100%),
+      linear-gradient(to bottom, transparent 70%, rgba(18,16,12,0.8) 100%);
+    pointer-events: none;
+  }
+
+  .hs-banner {
+    width: 80%;
+    margin: -16px auto 0;
+    position: relative;
+    z-index: 15;
+    background: linear-gradient(135deg, #3a3020, #28221a, #3a3020);
+    border: 1.5px solid rgba(212, 168, 69, 0.4);
+    border-radius: 24px;
+    padding: 7px 20px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  }
+
+  .hs-banner::before, .hs-banner::after {
+    content: '◆';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.4rem;
+    color: var(--gold-dark);
+  }
+  .hs-banner::before { left: 10px; }
+  .hs-banner::after { right: 10px; }
+
+  .hs-card-name {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--gold-bright);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    letter-spacing: 0.04em;
+  }
+
+  .hs-rarity {
+    width: 18px;
+    height: 18px;
+    margin: -7px auto 0;
+    position: relative;
+    z-index: 16;
+    border-radius: 3px;
+    transform: rotate(45deg);
+    background: radial-gradient(circle at 30% 30%, #ffcc00, #ff8c00);
+    box-shadow: 0 0 14px rgba(255, 140, 0, 0.6);
+  }
+
+  .hs-text-box {
+    margin: 8px 20px 0;
+    padding: 10px 14px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    border: 1px solid rgba(212, 168, 69, 0.08);
+    text-align: center;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .hs-text {
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.82rem;
+    color: #c9b89d;
+    line-height: 1.45;
+  }
+
+  .hs-text b { color: var(--gold-bright); font-weight: 700; }
+
+  .hs-type-line {
+    font-family: 'Cinzel', serif;
+    font-size: 0.55rem;
+    color: #5a5040;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  .hs-atk, .hs-hp {
+    position: absolute;
+    bottom: 6px;
+    width: 58px;
+    height: 58px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hs-atk { left: 6px; }
+  .hs-hp { right: 6px; }
+
+  .hs-atk-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 40% 35%, #f0d060, #b8860b, #7a5a0a);
+    clip-path: polygon(50% 0%, 85% 15%, 100% 50%, 85% 85%, 50% 100%, 15% 85%, 0% 50%, 15% 15%);
+  }
+
+  .hs-atk-bg::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    background: radial-gradient(circle at 40% 35%, #daa520, #8b6914, #5a4510);
+    clip-path: polygon(50% 0%, 85% 15%, 100% 50%, 85% 85%, 50% 100%, 15% 85%, 0% 50%, 15% 15%);
+  }
+
+  .hs-atk-icon {
+    position: absolute;
+    top: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    z-index: 2;
+  }
+
+  .hs-atk-num, .hs-hp-num {
+    position: relative;
+    z-index: 2;
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 1.6rem;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.7);
+    margin-top: 4px;
+  }
+
+  .hs-hp-bg {
+    position: absolute;
+    width: 56px;
+    height: 50px;
+    top: 4px;
+    background: radial-gradient(circle at 40% 30%, #ff6666, #cc0000, #7a0000);
+    clip-path: path('M28 48C28 48 2 33 2 18C2 9 9 3 17 3C21 3 24 5 28 10C32 5 35 3 39 3C47 3 54 9 54 18C54 33 28 48 28 48Z');
+  }
+
+  .hs-hp-bg::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    background: radial-gradient(circle at 35% 30%, #ee4444, #aa0000, #660000);
+    clip-path: path('M25 43C25 43 4 30 4 18C4 10 10 5 16 5C20 5 22 7 25 11C28 7 30 5 34 5C40 5 46 10 46 18C46 30 25 43 25 43Z');
+  }
+
+  /* ============================================
+     2. RPG EQUIPMENT CARD
+     ============================================ */
+  .rpg-card {
+    width: 280px;
+    height: 430px;
+    border-radius: 14px;
+  }
+
+  .rpg-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(165deg, #1e1a16, #141210, #0e0c0a);
+    border: 2px solid rgba(204, 34, 0, 0.35);
+    box-shadow: 0 0 40px rgba(204, 34, 0, 0.1), 0 8px 32px rgba(0,0,0,0.7), inset 0 0 60px rgba(204, 34, 0, 0.03);
+  }
+
+  .rpg-ribbon {
+    height: 28px;
+    background: linear-gradient(90deg, transparent, rgba(204, 34, 0, 0.15), transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid rgba(204, 34, 0, 0.2);
+  }
+
+  .rpg-ribbon span {
+    font-family: 'Cinzel', serif;
+    font-size: 0.5rem;
+    color: var(--blood-red);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+
+  .rpg-art {
+    width: calc(100% - 24px);
+    height: 170px;
+    margin: 8px auto 0;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(204, 34, 0, 0.2);
+  }
+
+  .rpg-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 10%;
+  }
+
+  .rpg-art::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 50%, rgba(14,12,10,0.9) 100%);
+    pointer-events: none;
+  }
+
+  .rpg-ilvl {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0,0,0,0.7);
+    border: 1px solid rgba(255, 140, 0, 0.4);
+    border-radius: 4px;
+    padding: 3px 10px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    color: var(--legendary-glow);
+    letter-spacing: 0.1em;
+    z-index: 5;
+    backdrop-filter: blur(4px);
+  }
+
+  .rpg-header { padding: 12px 18px 0; }
+
+  .rpg-item-name {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--legendary-glow);
+    text-shadow: 0 0 20px rgba(255, 140, 0, 0.3);
+  }
+
+  .rpg-item-slot {
+    font-size: 0.65rem;
+    color: #6b6155;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-top: 2px;
+  }
+
+  .rpg-stats {
+    padding: 10px 18px 6px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 16px;
+  }
+
+  .rpg-stat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+  }
+
+  .rpg-stat-icon { font-size: 0.65rem; width: 16px; text-align: center; }
+
+  .rpg-stat-text { color: #c9b89d; font-family: 'Crimson Pro', serif; }
+  .rpg-stat-text .val { color: #66bb6a; font-weight: 600; }
+
+  .rpg-sep {
+    height: 1px;
+    margin: 8px 18px;
+    background: linear-gradient(90deg, transparent, rgba(204, 34, 0, 0.2), transparent);
+  }
+
+  .rpg-abilities { padding: 0 18px; }
+
+  .rpg-ability {
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.78rem;
+    color: #a89880;
+    line-height: 1.4;
+    margin-bottom: 4px;
+  }
+
+  .rpg-ability .highlight { color: #66bb6a; font-weight: 600; }
+  .rpg-ability .set-bonus { color: #ffd740; }
+
+  .rpg-flavor {
+    padding: 8px 18px;
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: 0.72rem;
+    color: #4a4035;
+    line-height: 1.3;
+  }
+
+  /* ============================================
+     3. HERO / CHARACTER CARD
+     ============================================ */
+  .hero-card {
+    width: 320px;
+    height: 500px;
+    border-radius: 14px;
+  }
+
+  .hero-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(170deg, #1a0808, #100505, #0a0202);
+    border: 2px solid rgba(255, 69, 0, 0.3);
+    box-shadow: 0 0 50px rgba(255, 69, 0, 0.1), 0 8px 32px rgba(0,0,0,0.7);
+  }
+
+  .hero-bg-art {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .hero-bg-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 10%;
+    opacity: 0.35;
+    filter: blur(1px);
+  }
+
+  .hero-bg-art::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(10,2,2,0.3) 0%, rgba(10,2,2,0.1) 30%, rgba(10,2,2,0.6) 60%, rgba(10,2,2,0.95) 80%, rgba(10,2,2,1) 100%);
+  }
+
+  .hero-portrait-wrap {
+    position: relative;
+    z-index: 2;
+    width: 130px;
+    height: 130px;
+    margin: 24px auto 0;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid rgba(255, 69, 0, 0.5);
+    box-shadow: 0 0 30px rgba(255, 69, 0, 0.2), 0 0 60px rgba(255, 69, 0, 0.08), inset 0 0 20px rgba(0,0,0,0.5);
+  }
+
+  .hero-portrait-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 10%;
+  }
+
+  .hero-portrait-ring {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 69, 0, 0.2);
+    z-index: 1;
+    animation: ringPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes ringPulse {
+    0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.3; }
+    50% { transform: translateX(-50%) scale(1.06); opacity: 0.6; }
+  }
+
+  .hero-lvl-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 10;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #2a1a0a, #1a0e04);
+    border: 2px solid rgba(255, 140, 0, 0.4);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  }
+
+  .hero-lvl-badge .num {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 1rem;
+    color: var(--gold-bright);
+    line-height: 1;
+  }
+
+  .hero-lvl-badge .lbl {
+    font-family: 'Cinzel', serif;
+    font-size: 0.28rem;
+    color: #8a7e6b;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .hero-class-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(255, 69, 0, 0.3);
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.5rem;
+    color: var(--ember);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    backdrop-filter: blur(4px);
+  }
+
+  .hero-info {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 12px 16px 6px;
+  }
+
+  .hero-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--gold-bright);
+    text-shadow: 0 2px 10px rgba(0,0,0,0.6), 0 0 20px rgba(255, 140, 0, 0.2);
+  }
+
+  .hero-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.55rem;
+    color: #8a7e6b;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-top: 2px;
+  }
+
+  .hero-stats {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    padding: 12px 16px;
+  }
+
+  .hero-stat { text-align: center; min-width: 50px; }
+
+  .hero-stat .val {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 1.4rem;
+    color: var(--ember);
+    line-height: 1;
+    text-shadow: 0 0 10px rgba(255, 69, 0, 0.3);
+  }
+
+  .hero-stat .lbl {
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    color: #8a7e6b;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-top: 4px;
+  }
+
+  .hero-ult {
+    position: relative;
+    z-index: 2;
+    margin: 4px 14px 0;
+    padding: 10px 14px;
+    background: rgba(255, 69, 0, 0.06);
+    border: 1px solid rgba(255, 69, 0, 0.15);
+    border-radius: 8px;
+  }
+
+  .hero-ult-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+
+  .hero-ult-icon { font-size: 0.75rem; }
+
+  .hero-ult-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--ember);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .hero-ult-cd {
+    margin-left: auto;
+    font-family: 'Cinzel', serif;
+    font-size: 0.5rem;
+    color: #5a5040;
+  }
+
+  .hero-ult-desc {
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.75rem;
+    color: #a89880;
+    line-height: 1.35;
+  }
+
+  .hero-bars {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    padding: 10px 16px 14px;
+    background: linear-gradient(to top, rgba(10,2,2,0.95), transparent);
+  }
+
+  .hero-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .hero-bar-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    color: #8a7e6b;
+    width: 28px;
+    text-align: right;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+
+  .hero-bar-track {
+    flex: 1;
+    height: 10px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .hero-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+  }
+
+  .hero-bar-fill.hp {
+    background: linear-gradient(90deg, #8b0000, #cc2200, #e63900);
+    width: 78%;
+    box-shadow: 0 0 8px rgba(204, 34, 0, 0.3);
+  }
+
+  .hero-bar-fill.mp {
+    background: linear-gradient(90deg, #0d47a1, #1976d2, #42a5f5);
+    width: 55%;
+    box-shadow: 0 0 8px rgba(25, 118, 210, 0.3);
+  }
+
+  .hero-bar-val {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    color: #8a7e6b;
+    width: 70px;
+    text-align: right;
+    font-weight: 600;
+  }
+
+  /* ============================================
+     4. ACTION / ABILITY CARDS
+     ============================================ */
+  .action-card {
+    width: 220px;
+    height: 330px;
+    border-radius: 12px;
+  }
+
+  .action-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(170deg, #1a0808, #120404, #0a0101);
+    border: 1.5px solid rgba(255, 69, 0, 0.35);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 30px rgba(255, 69, 0, 0.1), 0 6px 24px rgba(0,0,0,0.6);
+  }
+
+  .action-top {
+    height: 220px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .action-top img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 20%;
+    opacity: 0.7;
+  }
+
+  .action-top::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(26,8,8,0.2) 0%, rgba(10,1,1,0.95) 100%);
+  }
+
+  .action-cost {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ff5722, #bf360c);
+    border: 2px solid #ff8a65;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 1.1rem;
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5), 0 0 8px rgba(255, 87, 34, 0.5);
+    z-index: 5;
+    box-shadow: 0 0 15px rgba(255, 87, 34, 0.4);
+  }
+
+  .action-element {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 0.5rem;
+    color: #ff8a65;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: rgba(0,0,0,0.5);
+    padding: 3px 8px;
+    border-radius: 3px;
+    border: 1px solid rgba(255, 87, 34, 0.3);
+    z-index: 5;
+    backdrop-filter: blur(4px);
+  }
+
+  .action-name {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #ff8a65;
+    text-align: center;
+    padding: 10px 12px 4px;
+    text-shadow: 0 0 15px rgba(255, 87, 34, 0.3);
+  }
+
+  .action-desc {
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.85rem;
+    color: #a89880;
+    text-align: center;
+    padding: 4px 14px;
+    line-height: 1.4;
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .action-footer {
+    padding: 0 12px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .action-dmg-badge {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #ff5722;
+    text-shadow: 0 0 8px rgba(255, 87, 34, 0.3);
+  }
+
+  .action-type-badge {
+    font-family: 'Cinzel', serif;
+    font-size: 0.55rem;
+    color: #5a5040;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border: 1px solid rgba(255,255,255,0.05);
+    padding: 3px 8px;
+    border-radius: 3px;
+  }
+
+  /* ============================================
+     PARTICLES
+     ============================================ */
+  .particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 30;
+    overflow: hidden;
+    border-radius: inherit;
+  }
+
+  .particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: var(--gold-bright);
+    border-radius: 50%;
+    animation: particleRise linear infinite;
+    opacity: 0;
+  }
+
+  @keyframes particleRise {
+    0% { opacity: 0; transform: translateY(0) scale(0); }
+    20% { opacity: 0.8; transform: translateY(-20px) scale(1); }
+    100% { opacity: 0; transform: translateY(-120px) scale(0); }
+  }
+
+  .particle:nth-child(1) { left: 15%; bottom: 10%; animation-duration: 2.5s; animation-delay: 0s; }
+  .particle:nth-child(2) { left: 30%; bottom: 5%; animation-duration: 3s; animation-delay: 0.3s; }
+  .particle:nth-child(3) { left: 50%; bottom: 15%; animation-duration: 2.8s; animation-delay: 0.6s; }
+  .particle:nth-child(4) { left: 70%; bottom: 8%; animation-duration: 2.2s; animation-delay: 0.9s; }
+  .particle:nth-child(5) { left: 85%; bottom: 12%; animation-duration: 3.2s; animation-delay: 1.2s; }
+  .particle:nth-child(6) { left: 25%; bottom: 20%; animation-duration: 2.6s; animation-delay: 0.4s; }
+  .particle:nth-child(7) { left: 60%; bottom: 18%; animation-duration: 2.9s; animation-delay: 0.8s; }
+  .particle:nth-child(8) { left: 45%; bottom: 6%; animation-duration: 3.1s; animation-delay: 1.5s; }
+
+  /* ============================================
+     ENTRANCE
+     ============================================ */
+  .card-row > * {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+    animation: cardEnter 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  }
+
+  .card-row > *:nth-child(1) { animation-delay: 0.15s; }
+  .card-row > *:nth-child(2) { animation-delay: 0.3s; }
+  .card-row > *:nth-child(3) { animation-delay: 0.45s; }
+  .card-row > *:nth-child(4) { animation-delay: 0.6s; }
+
+  @keyframes cardEnter {
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  @media (max-width: 600px) {
+    .card-row { gap: 24px; }
+    .hs-card { width: 260px; height: 380px; }
+    .rpg-card { width: 250px; height: 400px; }
+    .hero-card { width: 250px; height: 400px; }
+    .action-card { width: 200px; height: 300px; }
+  }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header">
+    <h1>Card Crawler</h1>
+    <div class="sub">Complete Card Collection</div>
+    <div class="divider"></div>
+  </header>
+
+  <div id="card-gallery"></div>
+
+</div>
+
+<script>
+const IMG_BASE = './card_crawler/frontend/src/images/';
+const CARD_DATA = {
+  "player": {
+    "name": "Adventurer",
+    "url": "player.png",
+    "stats": { "hp": 80, "maxHp": 80, "energy": 3, "maxEnergy": 3, "gold": 50 }
+  },
+  "enemies": [
+    { "id": "1-0-0", "name": "Goblin", "url": "goblin.png", "floor": 1, "nodeType": "combat", "stats": { "hp": 20, "atk": 5 } },
+    { "id": "1-1-0", "name": "Slime", "url": "slime.png", "floor": 1, "nodeType": "combat", "stats": { "hp": 30, "atk": 4 } },
+    { "id": "2-0-0", "name": "Skeleton", "url": "skeleton.png", "floor": 2, "nodeType": "combat", "stats": { "hp": 40, "atk": 8 } },
+    { "id": "2-1-0", "name": "Dark Knight", "url": "dark_knight.png", "floor": 2, "nodeType": "elite", "stats": { "hp": 60, "atk": 12 } },
+    { "id": "2-1-1", "name": "Orc", "url": "orc.png", "floor": 2, "nodeType": "combat", "stats": { "hp": 50, "atk": 7 } },
+    { "id": "3-0-0", "name": "Dragon", "url": "dragon.png", "floor": 3, "nodeType": "boss", "stats": { "hp": 100, "atk": 15 } }
+  ],
+  "starterCards": [
+    { "name": "Strike", "url": "strike.png", "cardType": 0, "cardTypeName": "ATK", "stats": { "cost": 1, "effectType": 0, "value": 6, "description": "Deal 6 damage" } },
+    { "name": "Defend", "url": "defend.png", "cardType": 1, "cardTypeName": "SKILL", "stats": { "cost": 1, "effectType": 0, "value": 5, "description": "Gain 5 block" } },
+    { "name": "Bash", "url": "bash.png", "cardType": 0, "cardTypeName": "ATK", "stats": { "cost": 2, "effectType": 1, "value": 8, "description": "Deal 8 damage + 2 vulnerable" } }
+  ],
+  "attackCards": [
+    { "index": 0, "name": "Heavy Blow", "url": "heavy_blow.png", "cardType": 0, "cardTypeName": "ATK", "stats": { "cost": 2, "effectType": 2, "value": 14, "description": "Deal 14 damage" } },
+    { "index": 1, "name": "Poison Stab", "url": "poison_stab.png", "cardType": 0, "cardTypeName": "ATK", "stats": { "cost": 1, "effectType": 3, "value": 3, "description": "Deal 4 dmg + 3 poison" } },
+    { "index": 2, "name": "Whirlwind", "url": "whirlwind.png", "cardType": 0, "cardTypeName": "ATK", "stats": { "cost": 1, "effectType": 4, "value": 5, "description": "Deal 5 damage" } },
+    { "index": 3, "name": "Rampage", "url": "rampage.png", "cardType": 0, "cardTypeName": "ATK", "stats": { "cost": 1, "effectType": 5, "value": 8, "description": "Deal 8 + 4×count" } },
+    { "index": 4, "name": "Execute", "url": "execute.png", "cardType": 0, "cardTypeName": "ATK", "stats": { "cost": 2, "effectType": 6, "value": 10, "description": "Deal 10 (25 if <30%)" } }
+  ],
+  "skillCards": [
+    { "index": 5, "name": "Shield Wall", "url": "shield_wall.png", "cardType": 1, "cardTypeName": "SKILL", "stats": { "cost": 2, "effectType": 1, "value": 12, "description": "Gain 12 block" } },
+    { "index": 6, "name": "Heal", "url": "heal.png", "cardType": 1, "cardTypeName": "SKILL", "stats": { "cost": 1, "effectType": 2, "value": 8, "description": "Restore 8 HP" } },
+    { "index": 7, "name": "Dodge", "url": "dodge.png", "cardType": 1, "cardTypeName": "SKILL", "stats": { "cost": 0, "effectType": 3, "value": 3, "description": "Gain 3 block (free)" } },
+    { "index": 8, "name": "Weaken", "url": "weaken.png", "cardType": 1, "cardTypeName": "SKILL", "stats": { "cost": 1, "effectType": 4, "value": 3, "description": "Enemy ATK -3, 2 turns" } },
+    { "index": 9, "name": "Adrenaline", "url": "adrenaline.png", "cardType": 1, "cardTypeName": "SKILL", "stats": { "cost": 0, "effectType": 5, "value": 0, "description": "Draw 2 + 1 energy" } }
+  ],
+  "powerCards": [
+    { "index": 10, "name": "Berserk", "url": "berserk.png", "cardType": 2, "cardTypeName": "POWER", "stats": { "cost": 2, "effectType": 0, "value": 3, "description": "+3 ATK permanent" } },
+    { "index": 11, "name": "Iron Skin", "url": "iron_skin.png", "cardType": 2, "cardTypeName": "POWER", "stats": { "cost": 2, "effectType": 1, "value": 3, "description": "+3 DEF permanent" } },
+    { "index": 12, "name": "Regeneration", "url": "regeneration.png", "cardType": 2, "cardTypeName": "POWER", "stats": { "cost": 2, "effectType": 2, "value": 2, "description": "+2 HP/turn" } },
+    { "index": 13, "name": "Thorns", "url": "thorns.png", "cardType": 2, "cardTypeName": "POWER", "stats": { "cost": 1, "effectType": 3, "value": 3, "description": "3 dmg to attacker" } },
+    { "index": 14, "name": "Fury", "url": "fury.png", "cardType": 2, "cardTypeName": "POWER", "stats": { "cost": 2, "effectType": 4, "value": 1, "description": "+1 card drawn/turn" } }
+  ],
+  "relics": [
+    { "type": 0, "name": "Whetstone", "url": "whetstone.png", "stats": { "effect": "+2 ATK", "shopCost": 100 } },
+    { "type": 1, "name": "Iron Ring", "url": "iron_ring.png", "stats": { "effect": "+2 DEF", "shopCost": 100 } },
+    { "type": 2, "name": "Energy Potion", "url": "energy_potion.png", "stats": { "effect": "+1 Energy", "shopCost": 100 } },
+    { "type": 3, "name": "Healing Crystal", "url": "healing_crystal.png", "stats": { "effect": "+5 HP after combat", "shopCost": 100 } },
+    { "type": 4, "name": "Lucky Coin", "url": "lucky_coin.png", "stats": { "effect": "+15 gold", "shopCost": 100 } },
+    { "type": 5, "name": "Thick Skin", "url": "thick_skin.png", "stats": { "effect": "+10 max HP", "shopCost": 100 } }
+  ]
+};
+
+function imgSrc(url) { return IMG_BASE + url; }
+
+function particles(color) {
+  const c = color || '#f0d060';
+  return `<div class="particles">${Array(8).fill(0).map(() => `<div class="particle" style="background:${c};"></div>`).join('')}</div>`;
+}
+
+// ═══════════════════════════════════════════
+//  NODE TYPE → BADGE COLORS
+// ═══════════════════════════════════════════
+const NODE_COLORS = {
+  combat:  { border: 'rgba(212,168,69,0.25)', glow: 'rgba(212,168,69,0.08)', mana: '' },
+  elite:   { border: 'rgba(163,53,238,0.4)',   glow: 'rgba(163,53,238,0.12)', mana: 'background:radial-gradient(circle at 35% 30%, #ce93d8, #7b1fa2, #4a148c);' },
+  boss:    { border: 'rgba(255,69,0,0.5)',      glow: 'rgba(255,69,0,0.15)',   mana: 'background:radial-gradient(circle at 35% 30%, #ff8a65, #e64a19, #bf360c);' }
+};
+
+const TYPE_COLORS = {
+  ATK:   { accent: '#ff5722', border: 'rgba(255,87,34,0.35)',  bg: 'linear-gradient(170deg, #1a0808, #120404, #0a0101)', particle: '#ff5722' },
+  SKILL: { accent: '#42a5f5', border: 'rgba(66,165,245,0.35)', bg: 'linear-gradient(170deg, #081a1a, #040f12, #01080a)', particle: '#42a5f5' },
+  POWER: { accent: '#ab47bc', border: 'rgba(171,71,188,0.35)', bg: 'linear-gradient(170deg, #150820, #0c0414, #06010a)', particle: '#ab47bc' }
+};
+
+// ═══════════════════════════════════════════
+//  HERO / PLAYER CARD
+// ═══════════════════════════════════════════
+function renderPlayer(p) {
+  const s = p.stats;
+  const hpPct = Math.round((s.hp / s.maxHp) * 100);
+  const ePct  = Math.round((s.energy / s.maxEnergy) * 100);
+  return `
+    <div class="card-wrap hero-card">
+      <div class="hero-inner">
+        <div class="hero-bg-art"><img src="${imgSrc(p.url)}" alt="${p.name}" onerror="this.style.display='none'" /></div>
+        <div class="hero-lvl-badge"><span class="num">1</span><span class="lbl">LVL</span></div>
+        <div class="hero-class-badge">Adventurer</div>
+        <div class="hero-portrait-ring"></div>
+        <div class="hero-portrait-wrap"><img src="${imgSrc(p.url)}" alt="${p.name}" onerror="this.style.display='none'" /></div>
+        <div class="hero-info">
+          <div class="hero-name">${p.name}</div>
+          <div class="hero-title">Card Crawler Hero</div>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><div class="val">${s.hp}</div><div class="lbl">HP</div></div>
+          <div class="hero-stat"><div class="val">${s.energy}</div><div class="lbl">NRG</div></div>
+          <div class="hero-stat"><div class="val">${s.gold}</div><div class="lbl">GOLD</div></div>
+        </div>
+        <div class="hero-bars">
+          <div class="hero-bar-row">
+            <span class="hero-bar-label">HP</span>
+            <div class="hero-bar-track"><div class="hero-bar-fill hp" style="width:${hpPct}%"></div></div>
+            <span class="hero-bar-val">${s.hp} / ${s.maxHp}</span>
+          </div>
+          <div class="hero-bar-row">
+            <span class="hero-bar-label">NRG</span>
+            <div class="hero-bar-track"><div class="hero-bar-fill mp" style="width:${ePct}%"></div></div>
+            <span class="hero-bar-val">${s.energy} / ${s.maxEnergy}</span>
+          </div>
+        </div>
+        ${particles('#ff4500')}
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════
+//  ENEMY CARDS (HS-style minion)
+// ═══════════════════════════════════════════
+function renderEnemy(e) {
+  const nc = NODE_COLORS[e.nodeType] || NODE_COLORS.combat;
+  const typeLabel = e.nodeType.charAt(0).toUpperCase() + e.nodeType.slice(1);
+  const floorLabel = `Floor ${e.floor}`;
+  return `
+    <div class="card-wrap hs-card">
+      <div class="hs-inner" style="border-color:${nc.border}; box-shadow: 0 0 40px ${nc.glow}, 0 8px 32px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,200,100,0.08);">
+        <div class="hs-frame">
+          <div class="hs-corner tl"></div><div class="hs-corner tr"></div>
+          <div class="hs-corner bl"></div><div class="hs-corner br"></div>
+        </div>
+        <div class="hs-mana"><div class="hs-mana-gem" ${nc.mana ? `style="${nc.mana}"` : ''}><span class="hs-mana-num">${e.floor}</span></div></div>
+        <div class="hs-art"><img src="${imgSrc(e.url)}" alt="${e.name}" onerror="this.style.display='none'" /></div>
+        <div class="hs-banner"><div class="hs-card-name">${e.name}</div></div>
+        <div class="hs-rarity"></div>
+        <div class="hs-type-line" style="text-align:center;font-family:'Cinzel',serif;font-size:0.55rem;color:#5a5040;letter-spacing:0.15em;text-transform:uppercase;margin-top:8px;">${typeLabel} — ${floorLabel}</div>
+        <div class="hs-atk">
+          <div class="hs-atk-bg"></div>
+          <span class="hs-atk-icon">⚔️</span>
+          <span class="hs-atk-num">${e.stats.atk}</span>
+        </div>
+        <div class="hs-hp">
+          <div class="hs-hp-bg"></div>
+          <span class="hs-hp-num">${e.stats.hp}</span>
+        </div>
+        ${particles()}
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════
+//  PLAYABLE CARDS (action-card style)
+// ═══════════════════════════════════════════
+function renderPlayableCard(c) {
+  const tc = TYPE_COLORS[c.cardTypeName] || TYPE_COLORS.ATK;
+  const costGrad = c.cardTypeName === 'SKILL'
+    ? 'background:radial-gradient(circle, #1e88e5, #0d47a1); border-color:#64b5f6;'
+    : c.cardTypeName === 'POWER'
+    ? 'background:radial-gradient(circle, #9c27b0, #4a148c); border-color:#ce93d8;'
+    : '';
+  return `
+    <div class="card-wrap action-card">
+      <div class="action-inner" style="border-color:${tc.border}; background:${tc.bg}; box-shadow: 0 0 30px ${tc.border.replace('0.35','0.1')}, 0 6px 24px rgba(0,0,0,0.6);">
+        <div class="action-top">
+          <img src="${imgSrc(c.url)}" alt="${c.name}" onerror="this.style.display='none'" />
+          <div class="action-cost" ${costGrad ? `style="${costGrad}"` : ''}>${c.stats.cost}</div>
+          <div class="action-element" style="color:${tc.accent}; border-color:${tc.border};">${c.cardTypeName}</div>
+        </div>
+        <div class="action-name" style="color:${tc.accent};">${c.name}</div>
+        <div class="action-desc">${c.stats.description}</div>
+        <div class="action-footer">
+          <span class="action-dmg-badge" style="color:${tc.accent};">⚡ ${c.stats.value}</span>
+          <span class="action-type-badge">${c.cardTypeName} • E${c.stats.effectType}</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════
+//  RELIC CARDS (RPG equipment style)
+// ═══════════════════════════════════════════
+function renderRelic(r) {
+  return `
+    <div class="card-wrap rpg-card" style="height: auto; min-height: 320px;">
+      <div class="rpg-inner" style="height: auto; min-height: 320px;">
+        <div class="rpg-ribbon"><span>★ Relic ★</span></div>
+        <div class="rpg-art">
+          <img src="${imgSrc(r.url)}" alt="${r.name}" onerror="this.style.display='none'" />
+        </div>
+        <div class="rpg-header">
+          <div class="rpg-item-name">${r.name}</div>
+          <div class="rpg-item-slot">Relic • Type ${r.type}</div>
+        </div>
+        <div class="rpg-stats">
+          <div class="rpg-stat"><span class="rpg-stat-icon">✨</span><span class="rpg-stat-text"><span class="val">${r.stats.effect}</span></span></div>
+          <div class="rpg-stat"><span class="rpg-stat-icon">🪙</span><span class="rpg-stat-text">Cost: <span class="val">${r.stats.shopCost}</span> gold</span></div>
+        </div>
+        <div class="rpg-sep"></div>
+        <div class="rpg-abilities">
+          <div class="rpg-ability">Passive: <span class="highlight">${r.stats.effect}</span> while equipped.</div>
+        </div>
+        <div class="rpg-flavor">"A relic of immense power, sought by all adventurers."</div>
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════
+//  SECTION BUILDER
+// ═══════════════════════════════════════════
+function section(title, sub, cardsHtml) {
+  return `
+    <h2 class="section-title">◆ ${title} ◆</h2>
+    <p class="section-sub">${sub}</p>
+    <div class="card-row">${cardsHtml}</div>`;
+}
+
+// ═══════════════════════════════════════════
+//  BUILD GALLERY
+// ═══════════════════════════════════════════
+const gallery = document.getElementById('card-gallery');
+const d = CARD_DATA;
+let html = '';
+
+// 1. Player
+html += section('Player', 'Your hero character', renderPlayer(d.player));
+
+// 2. Enemies
+html += section('Enemies', `${d.enemies.length} foes across 3 floors`, d.enemies.map(renderEnemy).join(''));
+
+// 3. Starter Cards
+html += section('Starter Cards', 'Your initial deck', d.starterCards.map(renderPlayableCard).join(''));
+
+// 4. Attack Cards
+html += section('Attack Cards', `${d.attackCards.length} offensive abilities`, d.attackCards.map(renderPlayableCard).join(''));
+
+// 5. Skill Cards
+html += section('Skill Cards', `${d.skillCards.length} defensive & utility abilities`, d.skillCards.map(renderPlayableCard).join(''));
+
+// 6. Power Cards
+html += section('Power Cards', `${d.powerCards.length} permanent buff abilities`, d.powerCards.map(renderPlayableCard).join(''));
+
+// 7. Relics
+html += section('Relics', `${d.relics.length} powerful artifacts`, d.relics.map(renderRelic).join(''));
+
+gallery.innerHTML = html;
+</script>
+</body>
+</html>

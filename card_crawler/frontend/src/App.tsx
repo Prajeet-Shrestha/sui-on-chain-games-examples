@@ -3,6 +3,7 @@ import { useCurrentAccount } from '@mysten/dapp-kit-react';
 import { useGameStore } from './stores/gameStore';
 import { useGameSession } from './hooks/useGameSession';
 import { usePlayerEntity } from './hooks/usePlayerEntity';
+import { useScreenTransition } from './hooks/useScreenTransition';
 import {
   STATE_MAP_SELECT,
   STATE_COMBAT,
@@ -27,12 +28,13 @@ export default function App() {
   const { data: player } = usePlayerEntity();
 
   const gameState = session?.state ?? -1;
+  const { displayState, transitionClass } = useScreenTransition(gameState);
 
   return (
     <>
       {/* Header */}
       <header className="header">
-        <div className="header-title">⚔️ CARD CRAWLER</div>
+        <div className="header-title">CARD CRAWLER</div>
         <div className="header-stats">
           {session && (
             <>
@@ -40,10 +42,10 @@ export default function App() {
               <span className="header-stat">📍 {STATE_NAMES[gameState] ?? 'Unknown'}</span>
               {player && (
                 <>
-                  <span className="header-stat" style={{ color: 'var(--danger)' }}>
+                  <span className="header-stat" style={{ color: 'var(--blood-red)' }}>
                     ❤️ {player.health.current}/{player.health.max}
                   </span>
-                  <span className="header-stat" style={{ color: 'var(--gold)' }}>
+                  <span className="header-stat" style={{ color: 'var(--gold-bright)' }}>
                     💰 {player.gold}
                   </span>
                 </>
@@ -62,31 +64,33 @@ export default function App() {
         {/* Error banner */}
         {error && <div className="error-banner">⚠️ {error}</div>}
 
-        {/* State-machine router */}
-        {!account ? (
-          <div className="start-screen">
-            <h1>⚔️ CARD CRAWLER</h1>
-            <p>Connect your wallet to begin</p>
-          </div>
-        ) : !sessionId ? (
-          <StartScreen />
-        ) : gameState === STATE_MAP_SELECT ? (
-          <MapScreen session={session!} player={player ?? null} />
-        ) : gameState === STATE_COMBAT ? (
-          <CombatScreen session={session!} player={player ?? null} />
-        ) : gameState === STATE_REWARD ? (
-          <RewardScreen session={session!} />
-        ) : gameState === STATE_SHOP ? (
-          <ShopScreen session={session!} player={player ?? null} />
-        ) : gameState === STATE_REST ? (
-          <RestScreen session={session!} player={player ?? null} />
-        ) : gameState === STATE_FINISHED ? (
-          <GameOverScreen session={session!} player={player ?? null} />
-        ) : (
-          <div className="panel">
-            <p>Loading game state...</p>
-          </div>
-        )}
+        {/* State-machine router with transitions */}
+        <div className={`screen-wrapper ${transitionClass}`}>
+          {!account ? (
+            <div className="start-screen">
+              <h1>CARD CRAWLER</h1>
+              <p>Connect your wallet to begin</p>
+            </div>
+          ) : !sessionId ? (
+            <StartScreen />
+          ) : displayState === STATE_MAP_SELECT ? (
+            <MapScreen session={session!} player={player ?? null} />
+          ) : displayState === STATE_COMBAT ? (
+            <CombatScreen session={session!} player={player ?? null} />
+          ) : displayState === STATE_REWARD ? (
+            <RewardScreen session={session!} />
+          ) : displayState === STATE_SHOP ? (
+            <ShopScreen session={session!} player={player ?? null} />
+          ) : displayState === STATE_REST ? (
+            <RestScreen session={session!} player={player ?? null} />
+          ) : displayState === STATE_FINISHED ? (
+            <GameOverScreen session={session!} player={player ?? null} />
+          ) : (
+            <div className="panel">
+              <p>Loading game state...</p>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );

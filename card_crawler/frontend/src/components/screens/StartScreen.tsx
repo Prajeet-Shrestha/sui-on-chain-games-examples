@@ -6,27 +6,38 @@ export default function StartScreen() {
   const isLoading = useGameStore((s) => s.isLoading);
 
   return (
-    <div className="start-screen">
-      <h1>⚔️ CARD CRAWLER</h1>
-      <p>A solo roguelike deck-builder on Sui. Fight through 3 floors and defeat the Dragon!</p>
-      <div style={{ marginBottom: 16 }}>
-        <div className="panel" style={{ textAlign: 'left', maxWidth: 400, margin: '0 auto' }}>
-          <div className="panel-title">Rules</div>
-          <ul style={{ listStyle: 'none', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.8 }}>
-            <li>❤️ 80 HP · ⚡ 3 Energy · 💰 50 Gold</li>
-            <li>🃏 10-card starter deck (Strike, Defend, Bash)</li>
-            <li>⚔️ Draw 5 cards, play cards, enemy attacks</li>
-            <li>🏔️ 3 floors: Combat → Shop → Rest → Boss</li>
-            <li>🐉 Defeat the Dragon on Floor 3 to win!</li>
-          </ul>
-        </div>
+    <div className="start-screen anim-fade-in">
+      <h1>CARD CRAWLER</h1>
+      <p>A dungeon-crawling card game on Sui blockchain</p>
+
+      <div className="divider" />
+
+      {/* Rules */}
+      <div className="panel" style={{ textAlign: 'left', marginBottom: 24 }}>
+        <div className="panel-title">📜 Rules</div>
+        <ul style={{
+          listStyle: 'none',
+          padding: 0,
+          color: 'var(--text-secondary)',
+          fontFamily: "'Crimson Pro', serif",
+          fontSize: 14,
+          lineHeight: 1.8,
+        }}>
+          <li>🏔️ Navigate 3 floors of increasingly dangerous nodes</li>
+          <li>⚔️ Combat: draw cards, then play & end turn</li>
+          <li>🃏 Build your deck with cards from rewards & shops</li>
+          <li>🔮 Collect relics for permanent bonuses</li>
+          <li>🔥 Rest at campfires to heal 30% HP</li>
+          <li>🐉 Defeat the Dragon on Floor 3 to win!</li>
+        </ul>
       </div>
+
       <button
-        className="btn btn-primary btn-lg"
+        className="btn btn-gold btn-full btn-lg anim-pulse-glow"
         onClick={createAndStart}
         disabled={isLoading}
       >
-        {isLoading ? '⏳ Creating run...' : '🎮 New Run'}
+        {isLoading ? '⏳ Starting...' : '🗡️ Begin New Run'}
       </button>
     </div>
   );

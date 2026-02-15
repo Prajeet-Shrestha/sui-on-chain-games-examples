@@ -1,6 +1,8 @@
 import { useGameActions } from '../../hooks/useGameActions';
 import { useGameStore } from '../../stores/gameStore';
-import { REWARD_CARDS } from '../../constants';
+import { REWARD_CARDS, CARD_TYPE_NAMES } from '../../constants';
+import { lookupCard } from '../../lib/cardLookup';
+import ActionCard from '../cards/ActionCard';
 import type { GameSession } from '../../lib/types';
 
 interface Props {
@@ -14,23 +16,36 @@ export default function RewardScreen({ session }: Props) {
   const rewards = REWARD_CARDS[session.floor] ?? REWARD_CARDS[1];
 
   return (
-    <div className="panel">
-      <div className="panel-title">⚔️ Victory! Choose a Card Reward</div>
+    <>
+      {/* Victory banner */}
+      <div className="anim-bounce-in" style={{ textAlign: 'center' }}>
+        <div className="result-banner win">⚔️ VICTORY!</div>
+        <div className="divider" />
+        <p style={{ color: 'var(--text-secondary)', fontFamily: "'Crimson Pro', serif", fontStyle: 'italic', marginBottom: 8 }}>
+          Choose a card to add to your deck
+        </p>
+      </div>
 
-      <div className="item-grid">
-        {rewards.map((card, idx) => (
-          <div
-            key={idx}
-            className="item-card"
-            onClick={() => !isLoading && collectReward(idx)}
-            style={{ cursor: isLoading ? 'not-allowed' : 'pointer' }}
-          >
-            <div className="item-name">{card.name}</div>
-            <div className="item-desc">
-              ⚡ {card.cost} · {card.description}
-            </div>
-          </div>
-        ))}
+      {/* Reward cards */}
+      <div className="card-row">
+        {rewards.map((card, idx) => {
+          const cardInfo = lookupCard(card.name);
+          const typeName = CARD_TYPE_NAMES[card.cardType] ?? 'ATK';
+          return (
+            <ActionCard
+              key={idx}
+              name={card.name}
+              cost={card.cost}
+              cardType={card.cardType}
+              cardTypeName={typeName}
+              description={cardInfo?.description ?? card.description}
+              value={card.value}
+              imageUrl={cardInfo?.imageUrl}
+              onClick={() => !isLoading && collectReward(idx)}
+              animationDelay={idx * 200}
+            />
+          );
+        })}
       </div>
 
       <button
@@ -41,6 +56,6 @@ export default function RewardScreen({ session }: Props) {
       >
         {isLoading ? '⏳ ...' : '⏭️ Skip Reward'}
       </button>
-    </div>
+    </>
   );
 }

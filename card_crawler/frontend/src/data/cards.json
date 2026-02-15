@@ -1,0 +1,287 @@
+{
+  "player": {
+    "name": "Adventurer",
+    "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/player.png",
+    "url": "/images/player.png",
+    "stats": {
+      "hp": 80,
+      "maxHp": 80,
+      "energy": 3,
+      "maxEnergy": 3,
+      "gold": 50
+    }
+  },
+
+  "enemies": [
+    {
+      "id": "1-0-0",
+      "name": "Goblin",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/goblin.png",
+      "url": "/images/goblin.png",
+      "floor": 1,
+      "nodeType": "combat",
+      "stats": { "hp": 20, "atk": 5 }
+    },
+    {
+      "id": "1-1-0",
+      "name": "Slime",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/slime.png",
+      "url": "/images/slime.png",
+      "floor": 1,
+      "nodeType": "combat",
+      "stats": { "hp": 30, "atk": 4 }
+    },
+    {
+      "id": "2-0-0",
+      "name": "Skeleton",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/skeleton.png",
+      "url": "/images/skeleton.png",
+      "floor": 2,
+      "nodeType": "combat",
+      "stats": { "hp": 40, "atk": 8 }
+    },
+    {
+      "id": "2-1-0",
+      "name": "Dark Knight",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/dark_knight.png",
+      "url": "/images/dark_knight.png",
+      "floor": 2,
+      "nodeType": "elite",
+      "stats": { "hp": 60, "atk": 12 }
+    },
+    {
+      "id": "2-1-1",
+      "name": "Orc",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/orc.png",
+      "url": "/images/orc.png",
+      "floor": 2,
+      "nodeType": "combat",
+      "stats": { "hp": 50, "atk": 7 }
+    },
+    {
+      "id": "3-0-0",
+      "name": "Dragon",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/dragon.png",
+      "url": "/images/dragon.png",
+      "floor": 3,
+      "nodeType": "boss",
+      "stats": { "hp": 100, "atk": 15 }
+    }
+  ],
+
+  "starterCards": [
+    {
+      "name": "Strike",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/strike.png",
+      "url": "/images/strike.png",
+      "cardType": 0,
+      "cardTypeName": "ATK",
+      "stats": { "cost": 1, "effectType": 0, "value": 6, "description": "Deal 6 damage" }
+    },
+    {
+      "name": "Defend",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/defend.png",
+      "url": "/images/defend.png",
+      "cardType": 1,
+      "cardTypeName": "SKILL",
+      "stats": { "cost": 1, "effectType": 0, "value": 5, "description": "Gain 5 block" }
+    },
+    {
+      "name": "Bash",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/bash.png",
+      "url": "/images/bash.png",
+      "cardType": 0,
+      "cardTypeName": "ATK",
+      "stats": { "cost": 2, "effectType": 1, "value": 8, "description": "Deal 8 damage + 2 vulnerable" }
+    }
+  ],
+
+  "attackCards": [
+    {
+      "index": 0,
+      "name": "Heavy Blow",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/heavy_blow.png",
+      "url": "/images/heavy_blow.png",
+      "cardType": 0,
+      "cardTypeName": "ATK",
+      "stats": { "cost": 2, "effectType": 2, "value": 14, "description": "Deal 14 damage" }
+    },
+    {
+      "index": 1,
+      "name": "Poison Stab",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/poison_stab.png",
+      "url": "/images/poison_stab.png",
+      "cardType": 0,
+      "cardTypeName": "ATK",
+      "stats": { "cost": 1, "effectType": 3, "value": 3, "description": "Deal 4 dmg + 3 poison" }
+    },
+    {
+      "index": 2,
+      "name": "Whirlwind",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/whirlwind.png",
+      "url": "/images/whirlwind.png",
+      "cardType": 0,
+      "cardTypeName": "ATK",
+      "stats": { "cost": 1, "effectType": 4, "value": 5, "description": "Deal 5 damage" }
+    },
+    {
+      "index": 3,
+      "name": "Rampage",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/rampage.png",
+      "url": "/images/rampage.png",
+      "cardType": 0,
+      "cardTypeName": "ATK",
+      "stats": { "cost": 1, "effectType": 5, "value": 8, "description": "Deal 8 + 4×count" }
+    },
+    {
+      "index": 4,
+      "name": "Execute",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/execute.png",
+      "url": "/images/execute.png",
+      "cardType": 0,
+      "cardTypeName": "ATK",
+      "stats": { "cost": 2, "effectType": 6, "value": 10, "description": "Deal 10 (25 if <30%)" }
+    }
+  ],
+
+  "skillCards": [
+    {
+      "index": 5,
+      "name": "Shield Wall",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/shield_wall.png",
+      "url": "/images/shield_wall.png",
+      "cardType": 1,
+      "cardTypeName": "SKILL",
+      "stats": { "cost": 2, "effectType": 1, "value": 12, "description": "Gain 12 block" }
+    },
+    {
+      "index": 6,
+      "name": "Heal",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/heal.png",
+      "url": "/images/heal.png",
+      "cardType": 1,
+      "cardTypeName": "SKILL",
+      "stats": { "cost": 1, "effectType": 2, "value": 8, "description": "Restore 8 HP" }
+    },
+    {
+      "index": 7,
+      "name": "Dodge",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/dodge.png",
+      "url": "/images/dodge.png",
+      "cardType": 1,
+      "cardTypeName": "SKILL",
+      "stats": { "cost": 0, "effectType": 3, "value": 3, "description": "Gain 3 block (free)" }
+    },
+    {
+      "index": 8,
+      "name": "Weaken",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/weaken.png",
+      "url": "/images/weaken.png",
+      "cardType": 1,
+      "cardTypeName": "SKILL",
+      "stats": { "cost": 1, "effectType": 4, "value": 3, "description": "Enemy ATK -3, 2 turns" }
+    },
+    {
+      "index": 9,
+      "name": "Adrenaline",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/adrenaline.png",
+      "url": "/images/adrenaline.png",
+      "cardType": 1,
+      "cardTypeName": "SKILL",
+      "stats": { "cost": 0, "effectType": 5, "value": 0, "description": "Draw 2 + 1 energy" }
+    }
+  ],
+
+  "powerCards": [
+    {
+      "index": 10,
+      "name": "Berserk",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/berserk.png",
+      "url": "/images/berserk.png",
+      "cardType": 2,
+      "cardTypeName": "POWER",
+      "stats": { "cost": 2, "effectType": 0, "value": 3, "description": "+3 ATK permanent" }
+    },
+    {
+      "index": 11,
+      "name": "Iron Skin",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/iron_skin.png",
+      "url": "/images/iron_skin.png",
+      "cardType": 2,
+      "cardTypeName": "POWER",
+      "stats": { "cost": 2, "effectType": 1, "value": 3, "description": "+3 DEF permanent" }
+    },
+    {
+      "index": 12,
+      "name": "Regeneration",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/regeneration.png",
+      "url": "/images/regeneration.png",
+      "cardType": 2,
+      "cardTypeName": "POWER",
+      "stats": { "cost": 2, "effectType": 2, "value": 2, "description": "+2 HP/turn" }
+    },
+    {
+      "index": 13,
+      "name": "Thorns",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/thorns.png",
+      "url": "/images/thorns.png",
+      "cardType": 2,
+      "cardTypeName": "POWER",
+      "stats": { "cost": 1, "effectType": 3, "value": 3, "description": "3 dmg to attacker" }
+    },
+    {
+      "index": 14,
+      "name": "Fury",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/fury.png",
+      "url": "/images/fury.png",
+      "cardType": 2,
+      "cardTypeName": "POWER",
+      "stats": { "cost": 2, "effectType": 4, "value": 1, "description": "+1 card drawn/turn" }
+    }
+  ],
+
+  "relics": [
+    {
+      "type": 0,
+      "name": "Whetstone",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/whetstone.png",
+      "url": "/images/whetstone.png",
+      "stats": { "effect": "+2 ATK", "shopCost": 100 }
+    },
+    {
+      "type": 1,
+      "name": "Iron Ring",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/iron_ring.png",
+      "url": "/images/iron_ring.png",
+      "stats": { "effect": "+2 DEF", "shopCost": 100 }
+    },
+    {
+      "type": 2,
+      "name": "Energy Potion",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/energy_potion.png",
+      "url": "/images/energy_potion.png",
+      "stats": { "effect": "+1 Energy", "shopCost": 100 }
+    },
+    {
+      "type": 3,
+      "name": "Healing Crystal",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/healing_crystal.png",
+      "url": "/images/healing_crystal.png",
+      "stats": { "effect": "+5 HP after combat", "shopCost": 100 }
+    },
+    {
+      "type": 4,
+      "name": "Lucky Coin",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/lucky_coin.png",
+      "url": "/images/lucky_coin.png",
+      "stats": { "effect": "+15 gold", "shopCost": 100 }
+    },
+    {
+      "type": 5,
+      "name": "Thick Skin",
+      "image": "/Users/ps/Documents/ibriz/git/engine_examples/card_crawler/frontend/src/images/thick_skin.png",
+      "url": "/images/thick_skin.png",
+      "stats": { "effect": "+10 max HP", "shopCost": 100 }
+    }
+  ]
+}

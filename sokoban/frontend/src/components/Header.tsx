@@ -22,7 +22,12 @@ export function Header() {
           🗑 Reset
         </button>
         <span className="header-badge">testnet</span>
-        <ConnectButton />
+        <div className="pixel-connect-wrapper">
+          <span className="pixel-connect-label">Connect</span>
+          <div className="pixel-connect-real">
+            <ConnectButton />
+          </div>
+        </div>
       </div>
     </header>
   );

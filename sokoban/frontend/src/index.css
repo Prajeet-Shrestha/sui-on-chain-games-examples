@@ -592,6 +592,78 @@ body::before {
   line-height: 2;
 }
 
+.hero-sprite {
+  margin-bottom: 24px;
+}
+
+.connect-cta {
+  margin-top: 8px;
+}
+
+/* ═══════════════════════════════════ */
+/* SUI CONNECT BUTTON — PIXEL WRAPPER  */
+/* ═══════════════════════════════════ */
+
+.pixel-connect-wrapper {
+  position: relative;
+  display: inline-block;
+  background: var(--accent);
+  border: 3px solid;
+  border-top-color: #c898ff;
+  border-left-color: #b070ff;
+  border-right-color: #6030a0;
+  border-bottom-color: #402080;
+  box-shadow: 3px 3px 0 #0a0818;
+  cursor: pointer;
+  transition: transform 0.05s, box-shadow 0.05s;
+}
+
+.pixel-connect-wrapper:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 #0a0818;
+}
+
+.pixel-connect-wrapper:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #0a0818;
+}
+
+.pixel-connect-label {
+  display: block;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: white;
+  text-shadow: 1px 1px 0 #4020a0;
+  padding: 12px 24px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  pointer-events: none;
+}
+
+.pixel-connect-real {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.pixel-connect-real mysten-dapp-kit-connect-button,
+.pixel-connect-real button {
+  width: 100% !important;
+  height: 100% !important;
+  cursor: pointer !important;
+}
+
+/* Header connect button — keep smaller, semi-transparent overlay */
+.header .pixel-connect-wrapper {
+  box-shadow: 2px 2px 0 #0a0818;
+}
+
+.header .pixel-connect-label {
+  font-size: 7px;
+  padding: 8px 14px;
+}
+
 /* ═══════════════════════════════════ */
 /* RESPONSIVE                          */
 /* ═══════════════════════════════════ */

@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { useWalletConnection } from '@mysten/dapp-kit-react';
+import { useWalletConnection, ConnectButton } from '@mysten/dapp-kit-react';
 import { Header } from './components/Header';
 import { LevelSelect } from './components/LevelSelect';
 import { GameBoard } from './components/GameBoard';
+import { SpriteAnimation } from './components/SpriteAnimation';
 import { MoveControls } from './components/MoveControls';
 import { useGameStore } from './stores/gameStore';
 import { useGameActions } from './hooks/useGameActions';
@@ -59,11 +60,28 @@ function App() {
 
       {!isConnected ? (
         <div className="connect-prompt">
+          <SpriteAnimation
+            src="/Pink_Monster_PushRight_6.png"
+            frameCount={6}
+            frameWidth={32}
+            frameHeight={32}
+            fps={8}
+            scale={4}
+            className="hero-sprite"
+          />
           <h2>📦 Sokoban On-Chain</h2>
           <p>Connect your Sui wallet to start playing.</p>
-          <p style={{ color: 'var(--text-muted)', fontSize: 12 }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: 8 }}>
             Push boxes onto goals. All moves are verified on-chain.
           </p>
+          <div className="connect-cta">
+            <div className="pixel-connect-wrapper">
+              <span className="pixel-connect-label">▶ Connect & Play</span>
+              <div className="pixel-connect-real">
+                <ConnectButton />
+              </div>
+            </div>
+          </div>
         </div>
       ) : screen === 'select' ? (
         <LevelSelect

@@ -10,19 +10,19 @@ mkdir -p "$DIST_DIR"
 
 # ── Build Card Crawler ──────────────────────────────────
 echo "🃏 Building Card Crawler..."
-cd "$SCRIPT_DIR/card_crawler/frontend"
+cd "$SCRIPT_DIR/examples/card_crawler/frontend"
 npx vite build
 cp -r dist/ "$DIST_DIR/card-crawler"
 
 # ── Build Sokoban ───────────────────────────────────────
 echo "📦 Building Sokoban..."
-cd "$SCRIPT_DIR/sokoban/frontend"
+cd "$SCRIPT_DIR/examples/sokoban/frontend"
 npx vite build
 cp -r dist/ "$DIST_DIR/sokoban"
 
 # ── Build Tactics Ogre ──────────────────────────────────
 echo "⚔️  Building Tactics Ogre..."
-cd "$SCRIPT_DIR/tactics_ogre/frontend"
+cd "$SCRIPT_DIR/examples/tactics_ogre/frontend"
 npx vite build
 cp -r dist/ "$DIST_DIR/tactics-ogre"
 

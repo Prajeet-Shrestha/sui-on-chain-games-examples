@@ -76,18 +76,7 @@ export function MoveControls() {
         )}
       </div>
 
-      {/* D-Pad */}
-      <div className="dpad">
-        <div className="dpad-btn empty" />
-        <button className="dpad-btn" onClick={() => addMove(DIR_UP)}>↑</button>
-        <div className="dpad-btn empty" />
-        <button className="dpad-btn" onClick={() => addMove(DIR_LEFT)}>←</button>
-        <div className="dpad-btn empty" />
-        <button className="dpad-btn" onClick={() => addMove(DIR_RIGHT)}>→</button>
-        <div className="dpad-btn empty" />
-        <button className="dpad-btn" onClick={() => addMove(DIR_DOWN)}>↓</button>
-        <div className="dpad-btn empty" />
-      </div>
+
 
       {/* Move counter */}
       <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>

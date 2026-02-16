@@ -6,44 +6,30 @@
   <title>On-Chain Games</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <script src="https://unpkg.com/feather-icons"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     /* ========== RESET ========== */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     /* ========== DESIGN TOKENS ========== */
     :root {
-      /* Backgrounds */
-      --bg:            #1e1e1e;
-      --bg-secondary:  #2c2c2c;
-      --bg-tertiary:   #383838;
-      --bg-elevated:   #3a3a3c;
-      /* Brand */
-      --brand:         #0d99ff;
-      --brand-hover:   #0c7fd3;
-      --brand-active:  #0a68b0;
-      --brand-muted:   rgba(13,153,255,0.15);
-      /* Semantic */
-      --success:       #14ae5c;
-      --warning:       #f5a623;
-      --danger:        #f24822;
-      --info:          #a259ff;
-      /* Text */
-      --text:          #ffffff;
-      --text-secondary:#b3b3b3;
-      --text-tertiary: #8c8c8c;
-      --text-brand:    #4ecaff;
-      /* Borders */
-      --border:        #444444;
-      --border-strong: #5c5c5c;
-      --border-brand:  #0d99ff;
-      /* Spacing (8pt grid) */
-      --sp-xs: 4px; --sp-sm: 8px; --sp-md: 16px; --sp-lg: 24px; --sp-xl: 32px; --sp-2xl: 48px;
-      /* Radius */
-      --radius-sm: 4px; --radius-md: 6px; --radius-lg: 8px; --radius-xl: 12px; --radius-full: 9999px;
-      /* Transitions */
-      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --bg:            #1a1a2e;
+      --bg-card:       #16213e;
+      --bg-card-hover: #1a2745;
+      --accent:        #e94560;
+      --accent-hover:  #ff6b81;
+      --tag-bg:        rgba(233, 69, 96, 0.15);
+      --tag-border:    rgba(233, 69, 96, 0.4);
+      --tag-text:      #ff6b81;
+      --free-bg:       rgba(20, 174, 92, 0.15);
+      --free-border:   rgba(20, 174, 92, 0.4);
+      --free-text:     #5cdb95;
+      --text:          #eaeaea;
+      --text-secondary:#8892a4;
+      --text-muted:    #6c7893;
+      --border:        rgba(255,255,255,0.06);
+      --radius:        8px;
+      --ease:          cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     /* ========== BASE ========== */
@@ -55,245 +41,225 @@
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    body::before {
-      content: ''; position: fixed; inset: 0; pointer-events: none;
-      background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
-      background-size: 24px 24px;
     }
 
-    /* ========== SCROLLBAR ========== */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--bg-elevated); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
-
-    /* ========== PAGE LAYOUT ========== */
+    /* ========== PAGE ========== */
     .page {
-      max-width: 800px;
-      width: 100%;
-      padding: var(--sp-2xl) var(--sp-lg);
-      position: relative;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 24px;
     }
 
     /* ========== HEADER ========== */
-    .header {
-      text-align: center;
-      margin-bottom: var(--sp-2xl);
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
     }
-    .header h1 {
-      font-size: 36px;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      margin-bottom: var(--sp-sm);
+    .section-header h1 {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
     }
-    .header p {
-      font-size: 15px;
-      color: var(--text-secondary);
-    }
-    .header .sui-badge {
+    .sui-pill {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      padding: 4px 10px;
+      gap: 6px;
+      padding: 5px 14px;
       font-size: 11px;
-      font-weight: 600;
-      border-radius: var(--radius-full);
-      border: 1px solid var(--brand);
-      background: var(--brand-muted);
-      color: var(--text-brand);
-      margin-top: var(--sp-md);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-radius: 999px;
+      border: 1px solid rgba(77, 171, 247, 0.35);
+      background: rgba(77, 171, 247, 0.1);
+      color: #7ec8f8;
     }
+    .sui-pill svg { width: 12px; height: 12px; }
 
     /* ========== GAMES GRID ========== */
     .games-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: var(--sp-lg);
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      .games-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .games-grid { grid-template-columns: 1fr; }
     }
 
     /* ========== GAME CARD ========== */
     .game-card {
-      background: var(--bg-secondary);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      transition: all 0.25s var(--ease);
       text-decoration: none;
       color: inherit;
       display: flex;
       flex-direction: column;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), border-color 0.25s var(--ease);
     }
     .game-card:hover {
-      border-color: var(--border-strong);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-      transform: translateY(-3px);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.45);
+      border-color: rgba(255,255,255,0.1);
     }
 
+    /* Banner */
     .card-banner {
-      height: 180px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       position: relative;
+      aspect-ratio: 4 / 3;
       overflow: hidden;
+      background: #0f1629;
     }
-    .card-banner .banner-img {
+    .card-banner img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      position: relative;
-      z-index: 1;
+      display: block;
+      transition: transform 0.4s var(--ease);
     }
-    .card-banner.crawler {
-      background: linear-gradient(135deg, #1e1b4b, #312e81);
+    .game-card:hover .card-banner img {
+      transform: scale(1.05);
     }
-    .card-banner.sokoban {
-      background: linear-gradient(135deg, #0c4a6e, #155e75);
-    }
-    /* Subtle grid overlay on banner */
-    .card-banner::after {
-      content: '';
+    /* Title overlay at bottom of image */
+    .card-banner .title-overlay {
       position: absolute;
-      inset: 0;
-      background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-      background-size: 20px 20px;
+      bottom: 0; left: 0; right: 0;
+      padding: 32px 14px 10px;
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+      pointer-events: none;
+    }
+    .card-banner .title-overlay h2 {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.6);
     }
 
+    /* Card body */
     .card-body {
-      padding: var(--sp-lg);
+      padding: 12px 14px 16px;
       flex: 1;
       display: flex;
       flex-direction: column;
-    }
-    .card-body h2 {
-      font-size: 17px;
-      font-weight: 600;
-      margin-bottom: var(--sp-sm);
-    }
-    .card-body p {
-      font-size: 13px;
-      color: var(--text-secondary);
-      line-height: 1.6;
-      flex: 1;
+      gap: 10px;
     }
 
-    .card-footer {
+    /* Tags row */
+    .card-meta {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-top: var(--sp-md);
-      padding-top: var(--sp-md);
-      border-top: 1px solid var(--border);
-    }
-    .card-tags {
-      display: flex;
-      gap: var(--sp-xs);
+      gap: 6px;
+      flex-wrap: wrap;
     }
     .tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 10px;
+      display: inline-block;
+      padding: 2px 8px;
       font-size: 11px;
       font-weight: 600;
-      border-radius: var(--radius-full);
-      border: 1px solid var(--border);
-      background: var(--bg-tertiary);
-      color: var(--text-secondary);
+      border-radius: 4px;
+      background: var(--tag-bg);
+      border: 1px solid var(--tag-border);
+      color: var(--tag-text);
+    }
+    .tag-free {
+      background: var(--free-bg);
+      border-color: var(--free-border);
+      color: var(--free-text);
     }
 
-    /* Play button — using btn-primary from design system */
-    .play-btn {
-      height: 28px;
-      padding: 0 10px;
-      border-radius: var(--radius-sm);
+    /* Description */
+    .card-desc {
       font-size: 12px;
-      font-weight: 500;
-      border: none;
-      cursor: pointer;
-      transition: all 0.2s var(--ease);
-      font-family: inherit;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      background: var(--brand);
-      color: #fff;
-      text-decoration: none;
-    }
-    .play-btn svg { width: 12px; height: 12px; stroke-width: 1.5; flex-shrink: 0; }
-    .game-card:hover .play-btn {
-      background: var(--brand-hover);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(13,153,255,0.3);
+      color: var(--text-secondary);
+      line-height: 1.55;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
     /* ========== FOOTER ========== */
     .footer {
       text-align: center;
-      margin-top: var(--sp-2xl);
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
       font-size: 12px;
-      color: var(--text-tertiary);
+      color: var(--text-muted);
     }
     .footer a {
-      color: var(--text-brand);
+      color: #7ec8f8;
       text-decoration: none;
       transition: color 0.2s;
     }
-    .footer a:hover { color: var(--brand); }
+    .footer a:hover { color: #a8dcfa; }
   </style>
 </head>
 <body>
 
   <div class="page">
+
     <!-- HEADER -->
-    <header class="header">
-      <h1>⚡ On-Chain Games</h1>
-      <p>Fully verifiable games powered by the Sui blockchain</p>
-      <span class="sui-badge"><i data-feather="zap" style="width:12px;height:12px"></i> Built on Sui</span>
-    </header>
+    <div class="section-header">
+      <h1>On-Chain Games</h1>
+      <span class="sui-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Built on Sui
+      </span>
+    </div>
 
     <!-- GAMES -->
     <div class="games-grid">
 
       <a href="/card-crawler/" class="game-card">
-        <div class="card-banner crawler">
-          <img class="banner-img" src="card-crawler-cover.png" alt="Card Crawler" />
+        <div class="card-banner">
+          <img src="card-crawler-cover.png" alt="Card Crawler" />
+          <div class="title-overlay"><h2>Card Crawler</h2></div>
         </div>
         <div class="card-body">
-          <h2>Card Crawler</h2>
-          <p>A deck-building dungeon crawler. Draft cards, fight monsters, and survive the dungeon — all verified on-chain.</p>
-          <div class="card-footer">
-            <div class="card-tags">
-              <span class="tag">Strategy</span>
-              <span class="tag">Deck Builder</span>
-            </div>
-            <span class="play-btn"><i data-feather="play"></i> Play</span>
+          <div class="card-meta">
+            <span class="tag">Strategy</span>
+            <span class="tag">Deck Builder</span>
+            <span class="tag tag-free">FREE</span>
           </div>
+          <p class="card-desc">A deck-building dungeon crawler. Draft cards, fight monsters, and survive the dungeon — all verified on-chain.</p>
         </div>
       </a>
 
       <a href="/sokoban/" class="game-card">
-        <div class="card-banner sokoban">
-          <img class="banner-img" src="sokoban-cover.png" alt="Sokoban" />
+        <div class="card-banner">
+          <img src="sokoban-cover.png" alt="Sokoban" />
+          <div class="title-overlay"><h2>Sokoban</h2></div>
         </div>
         <div class="card-body">
-          <h2>Sokoban</h2>
-          <p>The classic box-pushing puzzle game, reimagined with pixel art and on-chain solution verification.</p>
-          <div class="card-footer">
-            <div class="card-tags">
-              <span class="tag">Puzzle</span>
-              <span class="tag">Pixel Art</span>
-            </div>
-            <span class="play-btn"><i data-feather="play"></i> Play</span>
+          <div class="card-meta">
+            <span class="tag">Puzzle</span>
+            <span class="tag">Pixel Art</span>
+            <span class="tag tag-free">FREE</span>
           </div>
+          <p class="card-desc">The classic box-pushing puzzle game, reimagined with pixel art and on-chain solution verification.</p>
+        </div>
+      </a>
+
+      <a href="/tactics-ogre/" class="game-card">
+        <div class="card-banner">
+          <img src="tactics_ogre.png" alt="Tactics Ogre" />
+          <div class="title-overlay"><h2>Tactics Ogre</h2></div>
+        </div>
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="tag">Tactics</span>
+            <span class="tag">RPG</span>
+            <span class="tag tag-free">FREE</span>
+          </div>
+          <p class="card-desc">A tactical RPG with squad management, turn-based combat on isometric grids, and full on-chain battles.</p>
         </div>
       </a>
 
@@ -305,6 +271,5 @@
     </footer>
   </div>
 
-  <script>feather.replace();</script>
 </body>
 </html>

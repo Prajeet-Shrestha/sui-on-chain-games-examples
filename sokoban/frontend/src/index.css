@@ -278,110 +278,22 @@ body::before {
 }
 
 .board {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 12px;
   background: var(--bg-secondary);
   border-radius: var(--radius);
   border: 1px solid #ffffff08;
   box-shadow: 0 4px 24px #00000040;
-  width: min(400px, 90vw);
-  aspect-ratio: 1;
 }
 
-.cell {
+.game-canvas {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  width: min(384px, 85vw);
+  height: auto;
   border-radius: var(--radius-xs);
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s ease;
-  aspect-ratio: 1;
-}
-
-.cell.empty {
-  background: var(--cell-empty);
-}
-
-.cell.wall {
-  background: var(--cell-wall);
-  border: 1px solid var(--cell-wall-border);
-  box-shadow: inset 0 2px 4px #00000030;
-}
-
-.cell.wall::after {
-  content: '';
-  position: absolute;
-  inset: 3px;
-  border-radius: 2px;
-  background: repeating-linear-gradient(
-    45deg,
-    transparent,
-    transparent 3px,
-    #ffffff06 3px,
-    #ffffff06 6px
-  );
-}
-
-.cell.box {
-  background: var(--cell-box);
-  box-shadow: 0 2px 8px var(--cell-box-glow), inset 0 1px 0 #ffffff15;
-  border-radius: var(--radius-xs);
-}
-
-.cell.box::after {
-  content: '';
-  position: absolute;
-  inset: 20%;
-  border: 2px solid #ffffff25;
-  border-radius: 3px;
-}
-
-.cell.box_on_goal {
-  background: var(--cell-box-on-goal);
-  box-shadow: 0 2px 12px var(--cell-box-on-goal-glow), inset 0 1px 0 #ffffff20;
-  animation: pulse-glow 1.5s ease-in-out infinite;
-}
-
-.cell.box_on_goal::after {
-  content: '✓';
-  font-size: 16px;
-  font-weight: 700;
-  color: #ffffff;
-}
-
-.cell.player {
-  background: var(--cell-player);
-  box-shadow: 0 2px 12px var(--cell-player-glow);
-  border-radius: 50%;
-}
-
-.cell.player::after {
-  content: '';
-  position: absolute;
-  width: 40%;
-  height: 40%;
-  background: #ffffff30;
-  border-radius: 50%;
-  top: 20%;
-  left: 20%;
-}
-
-.cell.player_on_goal {
-  background: var(--cell-player);
-  box-shadow: 0 2px 12px var(--cell-player-glow);
-  border-radius: 50%;
-}
-
-.cell.goal-marker::before {
-  content: '';
-  position: absolute;
-  width: 30%;
-  height: 30%;
-  background: var(--cell-goal-dot);
-  border-radius: 50%;
-  z-index: 0;
 }
 
 @keyframes pulse-glow {
@@ -617,7 +529,6 @@ body::before {
 
 @media (max-width: 480px) {
   .board {
-    gap: 3px;
     padding: 8px;
   }
 

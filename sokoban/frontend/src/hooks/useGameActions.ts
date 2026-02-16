@@ -1,9 +1,8 @@
 import { Transaction } from '@mysten/sui/transactions';
 import { useDAppKit, useCurrentClient } from '@mysten/dapp-kit-react';
-import { useQueryClient } from '@tanstack/react-query';
 import { suiClient } from '../lib/suiClient';
 import {
-    PACKAGE_ID, WORLD_ID, GRID_ID, GAME_SESSION_ID, CLOCK_ID,
+    PACKAGE_ID, WORLD_ID, CLOCK_ID,
     ENTITY_PACKAGE_ID, ERROR_MAP, getLevelData, GRID_W,
 } from '../constants';
 
@@ -20,7 +19,6 @@ function parseTransactionError(failure: { error: string }): Error {
 export function useGameActions() {
     const dAppKit = useDAppKit();
     const client = useCurrentClient();
-    const queryClient = useQueryClient();
 
     return {
         startLevel: async (levelId: number) => {
@@ -30,9 +28,7 @@ export function useGameActions() {
                 module: 'game',
                 function: 'start_level',
                 arguments: [
-                    tx.object(GAME_SESSION_ID),
                     tx.object(WORLD_ID),
-                    tx.object(GRID_ID),
                     tx.pure.u64(levelId),
                     tx.object(CLOCK_ID),
                 ],
@@ -46,18 +42,30 @@ export function useGameActions() {
             // Wait for finality
             await client.waitForTransaction({
                 digest: result.Transaction.digest,
-                include: { effects: true },
             });
 
-            // Discover entities by querying the Grid's Table for known positions
-            const { playerEntityId, boxEntityIds } = await discoverEntitiesFromGrid(levelId);
+            // Fetch full transaction details with events
+            const txResponse = await suiClient.getTransactionBlock({
+                digest: result.Transaction.digest,
+                options: { showEvents: true, showObjectChanges: true },
+            });
 
-            await queryClient.refetchQueries({ queryKey: ['gameSession'] });
+            // Discover the newly created GameSession and Grid from transaction events
+            const { sessionId, gridId } = discoverCreatedObjects(txResponse);
 
-            return { playerEntityId, boxEntityIds };
+            // Discover entities by querying the new Grid's Table for known positions
+            const { playerEntityId, boxEntityIds } = await discoverEntitiesFromGrid(gridId, levelId);
+
+            return { playerEntityId, boxEntityIds, sessionId, gridId };
         },
 
-        submitSolution: async (directions: number[], playerEntityId: string, boxEntityIds: string[]) => {
+        submitSolution: async (
+            directions: number[],
+            playerEntityId: string,
+            boxEntityIds: string[],
+            sessionId: string,
+            gridId: string,
+        ) => {
             const tx = new Transaction();
 
             // Build the box entity vector
@@ -72,9 +80,9 @@ export function useGameActions() {
                 module: 'game',
                 function: 'submit_solution',
                 arguments: [
-                    tx.object(GAME_SESSION_ID),
+                    tx.object(sessionId),
                     tx.object(WORLD_ID),
-                    tx.object(GRID_ID),
+                    tx.object(gridId),
                     tx.object(playerEntityId),
                     boxVec,
                     tx.pure.vector('u8', directions),
@@ -91,11 +99,61 @@ export function useGameActions() {
                 include: { effects: true },
             });
 
-            await queryClient.refetchQueries({ queryKey: ['gameSession'] });
-
             return result.Transaction;
         },
     };
+}
+
+/**
+ * Parse transaction effects to find the newly created GameSession and Grid objects.
+ * GameSession type: `${PACKAGE_ID}::game::GameSession`
+ * Grid type: from the systems package `grid_sys::Grid`
+ */
+function discoverCreatedObjects(txResponse: any): { sessionId: string; gridId: string } {
+    let sessionId = '';
+    let gridId = '';
+
+    console.log('[ObjectDiscovery] Full txResponse keys:', Object.keys(txResponse));
+
+    // Primary: read from LevelStarted event
+    const events = txResponse.events ?? [];
+    console.log(`[ObjectDiscovery] Events found: ${events.length}`);
+    for (const event of events) {
+        console.log(`[ObjectDiscovery] Event type: ${event.type}`);
+        if (event.type?.includes('::game::LevelStarted')) {
+            const parsed = event.parsedJson;
+            console.log(`[ObjectDiscovery] LevelStarted parsed:`, parsed);
+            sessionId = parsed?.session_id ?? '';
+            gridId = parsed?.grid_id ?? '';
+            break;
+        }
+    }
+
+    // Fallback: parse from objectChanges if events didn't work
+    if (!sessionId || !gridId) {
+        const changes = txResponse.objectChanges ?? [];
+        console.log(`[ObjectDiscovery] Falling back to objectChanges: ${changes.length}`);
+        for (const change of changes) {
+            console.log(`[ObjectDiscovery] Change: type=${change.type}, objectType=${change.objectType}`);
+            if (change.type === 'created') {
+                if (change.objectType?.includes('::game::GameSession')) {
+                    sessionId = change.objectId;
+                    console.log(`[ObjectDiscovery] Found GameSession: ${sessionId}`);
+                } else if (change.objectType?.includes('::grid_sys::Grid')) {
+                    gridId = change.objectId;
+                    console.log(`[ObjectDiscovery] Found Grid: ${gridId}`);
+                }
+            }
+        }
+    }
+
+    if (!sessionId || !gridId) {
+        throw new Error('Could not discover session and grid IDs from transaction. ' +
+            `Events: ${events.length}, ObjectChanges: ${(txResponse.objectChanges ?? []).length}`);
+    }
+
+    console.log(`[ObjectDiscovery] Session: ${sessionId}, Grid: ${gridId}`);
+    return { sessionId, gridId };
 }
 
 /**
@@ -110,12 +168,12 @@ export function useGameActions() {
  *   1. Read Grid object → extract Table UID from cells.id.id
  *   2. For each needed position, use getDynamicFieldObject on the Table
  */
-async function discoverEntitiesFromGrid(levelId: number) {
+async function discoverEntitiesFromGrid(gridId: string, levelId: number) {
     const levelData = getLevelData(levelId);
 
     // Step 1: Read Grid to get the Table's internal UID
     const gridObj = await suiClient.getObject({
-        id: GRID_ID,
+        id: gridId,
         options: { showContent: true },
     });
 

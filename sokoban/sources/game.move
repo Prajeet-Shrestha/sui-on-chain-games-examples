@@ -1,6 +1,7 @@
 /// Sokoban — On-Chain Box Pusher
 /// Player submits entire solution as a vector<u8> of directions.
 /// Contract simulates all moves and verifies the puzzle is solved.
+/// Each start_level creates a fresh Grid + GameSession per player.
 #[allow(unused_const, unused_field, lint(public_entry))]
 module sokoban::game;
 
@@ -56,26 +57,18 @@ const GRID_H: u64 = 6;
 const MAX_LEVEL: u64 = 5;
 
 // ═══════════════════════════════════════════════
-// GAME SESSION
+// GAME SESSION (one per player per level start)
 // ═══════════════════════════════════════════════
 
 public struct GameSession has key {
     id: UID,
     state: u8,
-    player: Option<address>,
+    player: address,
     level_id: u64,
     max_moves: u64,
     // Goal positions (parallel arrays)
     goal_xs: vector<u64>,
     goal_ys: vector<u64>,
-    // Starting positions for reset
-    player_start_x: u64,
-    player_start_y: u64,
-    box_start_xs: vector<u64>,
-    box_start_ys: vector<u64>,
-    // Wall positions (stored so we can clear grid on restart)
-    wall_xs: vector<u64>,
-    wall_ys: vector<u64>,
     // Scoring
     best_score: Option<u64>,
 }
@@ -84,13 +77,13 @@ public struct GameSession has key {
 // EVENTS
 // ═══════════════════════════════════════════════
 
-public struct GameCreated has copy, drop {
-    session_id: ID,
+public struct WorldCreated has copy, drop {
     world_id: ID,
 }
 
 public struct LevelStarted has copy, drop {
     session_id: ID,
+    grid_id: ID,
     level_id: u64,
     player: address,
 }
@@ -108,85 +101,57 @@ public struct SolutionFailed has copy, drop {
 }
 
 // ═══════════════════════════════════════════════
-// INIT — Creates World + Grid + GameSession
+// INIT — Creates World only (shared singleton)
 // ═══════════════════════════════════════════════
 
 fun init(ctx: &mut TxContext) {
     let world = world::create_world(
         ascii::string(b"Sokoban"),
-        200,  // max entities (walls + boxes + player across levels)
+        10000,  // max entities — high cap since each player spawns entities
         ctx,
     );
 
-    let grid = world::create_grid(&world, GRID_W, GRID_H, ctx);
-
-    let session = GameSession {
-        id: object::new(ctx),
-        state: STATE_LOBBY,
-        player: option::none(),
-        level_id: 0,
-        max_moves: 0,
-        goal_xs: vector[],
-        goal_ys: vector[],
-        player_start_x: 0,
-        player_start_y: 0,
-        box_start_xs: vector[],
-        box_start_ys: vector[],
-        wall_xs: vector[],
-        wall_ys: vector[],
-        best_score: option::none(),
-    };
-
-    event::emit(GameCreated {
-        session_id: object::id(&session),
+    event::emit(WorldCreated {
         world_id: object::id(&world),
     });
 
-    world::share_grid(grid);
     world::share(world);
-    transfer::share_object(session);
 }
 
 // ═══════════════════════════════════════════════
 // ENTRY FUNCTIONS
 // ═══════════════════════════════════════════════
 
-/// Start a level — spawns all entities for the chosen level.
+/// Start a level — creates a fresh Grid + GameSession and spawns all entities.
+/// Each player gets their own isolated board.
 public entry fun start_level(
-    session: &mut GameSession,
     world: &mut World,
-    grid: &mut Grid,
     level_id: u64,
     clock: &Clock,
     ctx: &mut TxContext,
 ) {
-    assert!(session.state == STATE_LOBBY || session.state == STATE_FINISHED || session.state == STATE_ACTIVE, EInvalidState);
     assert!(level_id >= 1 && level_id <= MAX_LEVEL, EInvalidLevel);
 
-    // If restarting from ACTIVE or FINISHED, clear old entities from grid first
-    if (session.state == STATE_ACTIVE || session.state == STATE_FINISHED) {
-        clear_grid(session, grid);
-    };
-
     let player_addr = ctx.sender();
-    session.player = option::some(player_addr);
-    session.level_id = level_id;
-    session.state = STATE_ACTIVE;
-    session.best_score = option::none();
 
     // Load level data
     let (wall_xs, wall_ys, box_xs, box_ys, goal_xs, goal_ys, px, py, max_moves) =
         get_level_data(level_id);
 
-    session.max_moves = max_moves;
-    session.goal_xs = goal_xs;
-    session.goal_ys = goal_ys;
-    session.player_start_x = px;
-    session.player_start_y = py;
-    session.box_start_xs = box_xs;
-    session.box_start_ys = box_ys;
-    session.wall_xs = wall_xs;
-    session.wall_ys = wall_ys;
+    // Create a fresh grid for this player's session
+    let mut grid = world::create_grid(world, GRID_W, GRID_H, ctx);
+
+    // Create a fresh session for this player
+    let session = GameSession {
+        id: object::new(ctx),
+        state: STATE_ACTIVE,
+        player: player_addr,
+        level_id,
+        max_moves,
+        goal_xs,
+        goal_ys,
+        best_score: option::none(),
+    };
 
     // Spawn walls
     let num_walls = vector::length(&wall_xs);
@@ -195,37 +160,43 @@ public entry fun start_level(
         let wx = *vector::borrow(&wall_xs, i);
         let wy = *vector::borrow(&wall_ys, i);
         let wall = world::spawn_tile(world, wx, wy, (MARKER_WALL as u8), clock, ctx);
-        world::place(world, grid, object::id(&wall), wx, wy);
+        world::place(world, &mut grid, object::id(&wall), wx, wy);
         entity::share(wall);
         i = i + 1;
     };
 
     // Spawn boxes
-    let num_boxes = vector::length(&session.box_start_xs);
+    let num_boxes = vector::length(&box_xs);
     i = 0;
     while (i < num_boxes) {
-        let bx = *vector::borrow(&session.box_start_xs, i);
-        let by = *vector::borrow(&session.box_start_ys, i);
+        let bx = *vector::borrow(&box_xs, i);
+        let by = *vector::borrow(&box_ys, i);
         let box_entity = world::spawn_tile(world, bx, by, (MARKER_BOX as u8), clock, ctx);
-        world::place(world, grid, object::id(&box_entity), bx, by);
+        world::place(world, &mut grid, object::id(&box_entity), bx, by);
         entity::share(box_entity);
         i = i + 1;
     };
 
     // Spawn player
     let player_entity = world::spawn_tile(world, px, py, (MARKER_PLAYER as u8), clock, ctx);
-    world::place(world, grid, object::id(&player_entity), px, py);
+    world::place(world, &mut grid, object::id(&player_entity), px, py);
     entity::share(player_entity);
 
     event::emit(LevelStarted {
-        session_id: object::id(session),
+        session_id: object::id(&session),
+        grid_id: object::id(&grid),
         level_id,
         player: player_addr,
     });
+
+    // Share both — each player gets their own pair
+    world::share_grid(grid);
+    transfer::share_object(session);
 }
 
 /// Submit a solution — vector of directions. All-or-nothing.
 /// The player_entity must be passed first, then all box entities in spawn order.
+/// Session and grid are the player's own per-session objects.
 public entry fun submit_solution(
     session: &mut GameSession,
     world: &World,
@@ -236,7 +207,7 @@ public entry fun submit_solution(
     ctx: &TxContext,
 ) {
     assert!(session.state == STATE_ACTIVE, ELevelNotActive);
-    assert!(option::contains(&session.player, &ctx.sender()), ENotPlayer);
+    assert!(session.player == ctx.sender(), ENotPlayer);
 
     let num_moves = vector::length(&directions);
     assert!(num_moves <= session.max_moves, ETooManyMoves);
@@ -338,39 +309,6 @@ public entry fun submit_solution(
 // ═══════════════════════════════════════════════
 // INTERNAL HELPERS
 // ═══════════════════════════════════════════════
-
-/// Remove all entities from the grid using stored positions.
-/// Called when restarting a level from ACTIVE state.
-fun clear_grid(session: &GameSession, grid: &mut Grid) {
-    // Remove walls
-    let num_walls = vector::length(&session.wall_xs);
-    let mut i = 0;
-    while (i < num_walls) {
-        let wx = *vector::borrow(&session.wall_xs, i);
-        let wy = *vector::borrow(&session.wall_ys, i);
-        if (grid_sys::is_occupied(grid, wx, wy)) {
-            grid_sys::remove(grid, wx, wy);
-        };
-        i = i + 1;
-    };
-
-    // Remove boxes (at start positions — they haven't moved since no submit_solution succeeded)
-    let num_boxes = vector::length(&session.box_start_xs);
-    i = 0;
-    while (i < num_boxes) {
-        let bx = *vector::borrow(&session.box_start_xs, i);
-        let by = *vector::borrow(&session.box_start_ys, i);
-        if (grid_sys::is_occupied(grid, bx, by)) {
-            grid_sys::remove(grid, bx, by);
-        };
-        i = i + 1;
-    };
-
-    // Remove player
-    if (grid_sys::is_occupied(grid, session.player_start_x, session.player_start_y)) {
-        grid_sys::remove(grid, session.player_start_x, session.player_start_y);
-    };
-}
 
 /// Calculate target position from current position + direction.
 /// Returns (x, y, is_valid). Invalid if out of bounds.

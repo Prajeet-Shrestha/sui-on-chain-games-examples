@@ -12,7 +12,9 @@ interface GameStore {
     levelId: number | null;
     levelData: LevelData | null;
 
-    // On-chain entity IDs
+    // On-chain object IDs (per-player session)
+    sessionId: string | null;
+    gridId: string | null;
     playerEntityId: string | null;
     boxEntityIds: string[];
 
@@ -22,7 +24,7 @@ interface GameStore {
     moveQueue: number[];
 
     // Actions
-    initLevel: (levelId: number, playerEntityId: string, boxEntityIds: string[]) => void;
+    initLevel: (levelId: number, sessionId: string, gridId: string, playerEntityId: string, boxEntityIds: string[]) => void;
     addMove: (dir: number) => boolean;
     undoMove: () => void;
     resetMoves: () => void;
@@ -35,17 +37,21 @@ interface GameStore {
 export const useGameStore = create<GameStore>((set, get) => ({
     levelId: null,
     levelData: null,
+    sessionId: null,
+    gridId: null,
     playerEntityId: null,
     boxEntityIds: [],
     playerPos: null,
     boxPositions: [],
     moveQueue: [],
 
-    initLevel: (levelId: number, playerEntityId: string, boxEntityIds: string[]) => {
+    initLevel: (levelId: number, sessionId: string, gridId: string, playerEntityId: string, boxEntityIds: string[]) => {
         const data = getLevelData(levelId);
         set({
             levelId,
             levelData: data,
+            sessionId,
+            gridId,
             playerEntityId,
             boxEntityIds,
             playerPos: { x: data.playerX, y: data.playerY },
@@ -124,9 +130,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
     },
 
     resetMoves: () => {
-        const { levelId, playerEntityId, boxEntityIds } = get();
+        const { levelId, sessionId, gridId, playerEntityId, boxEntityIds } = get();
         if (!levelId) return;
-        get().initLevel(levelId, playerEntityId ?? '', boxEntityIds);
+        get().initLevel(levelId, sessionId ?? '', gridId ?? '', playerEntityId ?? '', boxEntityIds);
     },
 
     getDirectionName: (dir: number) => {

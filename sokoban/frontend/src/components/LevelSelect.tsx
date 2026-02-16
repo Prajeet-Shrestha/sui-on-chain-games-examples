@@ -17,8 +17,8 @@ export function LevelSelect({ onLevelStarted }: Props) {
     setLoading(levelId);
     setError(null);
     try {
-      const { playerEntityId, boxEntityIds } = await startLevel(levelId);
-      initLevel(levelId, playerEntityId, boxEntityIds);
+      const { playerEntityId, boxEntityIds, sessionId, gridId } = await startLevel(levelId);
+      initLevel(levelId, sessionId, gridId, playerEntityId, boxEntityIds);
       onLevelStarted();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to start level');

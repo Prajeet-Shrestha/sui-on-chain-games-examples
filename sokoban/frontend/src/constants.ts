@@ -1,8 +1,7 @@
-// Deployed contract IDs (testnet) — v3 with grid clearing on restart
-export const PACKAGE_ID = '0x6c44825e9e36296ea9821e4a929dd8e80a2afe0adfec6576f5e8c7fd45a020d1';
-export const GAME_SESSION_ID = '0xd96c9bbb8c25955bdc088de2c913361563cc801367262f2753b1e679acf24b14';
-export const GRID_ID = '0xe444047ed1d0979543602183e0f322f62c7fcd86d54d5eac31b8f2c4c1f6d008';
-export const WORLD_ID = '0xf4eca83955ab6110761242a9b7745093b3d128b2dcad68e7c2b3935c745120b1';
+// Deployed contract IDs (testnet) — v4 per-player sessions
+export const PACKAGE_ID = '0xc77ba0bedb78364d08fe6f310bc500236df7ec8bc9a0d83f260ef835f5405c6e';
+// GAME_SESSION_ID and GRID_ID are now dynamic — created per start_level call
+export const WORLD_ID = '0xd58bee2ebe4ccd5216f8adb8e7ac437e25c017a3fa42e71ceb9b83a75f0f0ea2';
 export const CLOCK_ID = '0x6';
 export const ENTITY_PACKAGE_ID = '0x5027c19c807223b4b91e8f70b694c5b37118d5ea727d982820b837b54697d7f4';
 

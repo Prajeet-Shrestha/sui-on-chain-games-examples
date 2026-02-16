@@ -19,6 +19,8 @@ function App() {
   const levelData = useGameStore((s) => s.levelData);
   const playerEntityId = useGameStore((s) => s.playerEntityId);
   const boxEntityIds = useGameStore((s) => s.boxEntityIds);
+  const sessionId = useGameStore((s) => s.sessionId);
+  const gridId = useGameStore((s) => s.gridId);
   const [submitting, setSubmitting] = useState(false);
   const [submitMoves, setSubmitMoves] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -29,14 +31,14 @@ function App() {
 
   async function handleSubmit() {
     if (!solved || !levelId || moveQueue.length === 0) return;
-    if (!playerEntityId || boxEntityIds.length === 0) {
+    if (!playerEntityId || boxEntityIds.length === 0 || !sessionId || !gridId) {
       setError('Entity IDs not found. Try restarting the level.');
       return;
     }
     setSubmitting(true);
     setError(null);
     try {
-      await submitSolution(moveQueue, playerEntityId, boxEntityIds);
+      await submitSolution(moveQueue, playerEntityId, boxEntityIds, sessionId, gridId);
       setSubmitMoves(moveQueue.length);
       setScreen('victory');
     } catch (err) {

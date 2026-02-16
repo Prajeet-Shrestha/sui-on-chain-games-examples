@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Design System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/feather-icons"></script>
+  <style>
+    /* ========== RESET ========== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ========== DESIGN TOKENS ========== */
+    :root {
+      /* Backgrounds */
+      --bg:            #1e1e1e;
+      --bg-secondary:  #2c2c2c;
+      --bg-tertiary:   #383838;
+      --bg-elevated:   #3a3a3c;
+      /* Brand */
+      --brand:         #0d99ff;
+      --brand-hover:   #0c7fd3;
+      --brand-active:  #0a68b0;
+      --brand-muted:   rgba(13,153,255,0.15);
+      /* Semantic */
+      --success:       #14ae5c;
+      --warning:       #f5a623;
+      --danger:        #f24822;
+      --info:          #a259ff;
+      /* Text */
+      --text:          #ffffff;
+      --text-secondary:#b3b3b3;
+      --text-tertiary: #8c8c8c;
+      --text-brand:    #4ecaff;
+      /* Borders */
+      --border:        #444444;
+      --border-strong: #5c5c5c;
+      --border-brand:  #0d99ff;
+      /* Spacing (8pt grid) */
+      --sp-xs: 4px; --sp-sm: 8px; --sp-md: 16px; --sp-lg: 24px; --sp-xl: 32px; --sp-2xl: 48px;
+      /* Radius */
+      --radius-sm: 4px; --radius-md: 6px; --radius-lg: 8px; --radius-xl: 12px; --radius-full: 9999px;
+      /* Transitions */
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ========== BASE ========== */
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0; pointer-events: none;
+      background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    /* ========== LAYOUT ========== */
+    .ds-page { max-width: 960px; margin: 0 auto; padding: var(--sp-2xl) var(--sp-lg); position: relative; }
+    .ds-header { text-align: center; margin-bottom: var(--sp-2xl); }
+    .ds-header h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: var(--sp-sm); }
+    .ds-header p { font-size: 16px; color: var(--text-secondary); }
+
+    /* Nav */
+    .ds-nav { display: flex; flex-wrap: wrap; gap: var(--sp-sm); justify-content: center; margin-bottom: var(--sp-2xl); position: sticky; top: 0; z-index: 100; background: rgba(30,30,30,0.92); backdrop-filter: blur(12px); padding: var(--sp-md) 0; border-bottom: 1px solid var(--border); }
+    .ds-nav a { color: var(--text-secondary); text-decoration: none; font-size: 13px; font-weight: 500; padding: 6px 14px; border-radius: var(--radius-full); transition: all 0.2s var(--ease); border: 1px solid transparent; }
+    .ds-nav a:hover { color: var(--text-brand); background: var(--brand-muted); border-color: var(--border-brand); }
+
+    /* Section */
+    .ds-section { margin-bottom: 64px; }
+    .ds-section-title { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: var(--sp-sm); display: flex; align-items: center; gap: var(--sp-sm); }
+    .ds-section-title .section-icon { color: var(--brand); }
+    .ds-section-desc { color: var(--text-secondary); font-size: 14px; margin-bottom: var(--sp-lg); }
+    .ds-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--sp-md); }
+    .ds-row { display: flex; flex-wrap: wrap; gap: var(--sp-md); align-items: center; margin-bottom: var(--sp-md); }
+    .ds-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-tertiary); margin-bottom: var(--sp-sm); }
+
+    /* ========== 1. COLORS ========== */
+    .color-card { border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border); }
+    .color-swatch { height: 72px; }
+    .color-meta { padding: 10px 12px; background: var(--bg-secondary); }
+    .color-name { font-size: 13px; font-weight: 600; }
+    .color-hex { font-size: 11px; color: var(--text-tertiary); font-family: 'SF Mono', monospace; }
+
+    /* ========== 2. TYPOGRAPHY ========== */
+    .type-row { padding: var(--sp-md); background: var(--bg-secondary); border-radius: var(--radius-lg); margin-bottom: var(--sp-sm); display: flex; justify-content: space-between; align-items: baseline; }
+    .type-sample { flex: 1; }
+    .type-meta { font-size: 11px; color: var(--text-tertiary); font-family: 'SF Mono', monospace; white-space: nowrap; }
+
+    /* ========== 3. BUTTONS ========== */
+    .btn { height: 36px; padding: 0 var(--sp-md); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s var(--ease); font-family: inherit; display: inline-flex; align-items: center; justify-content: center; gap: 6px; outline: none; }
+    .btn svg { width: 14px; height: 14px; stroke-width: 1.5; flex-shrink: 0; }
+    .btn:focus-visible { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--brand); }
+
+    .btn-primary { background: var(--brand); color: #fff; }
+    .btn-primary:hover { background: var(--brand-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(13,153,255,0.3); }
+    .btn-primary:active { background: var(--brand-active); transform: translateY(0); box-shadow: none; }
+
+    .btn-secondary { background: var(--bg-tertiary); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--bg-elevated); border-color: var(--border-strong); }
+    .btn-secondary:active { background: var(--bg-secondary); }
+
+    .btn-ghost { background: transparent; color: var(--text-brand); }
+    .btn-ghost:hover { background: var(--brand-muted); }
+    .btn-ghost:active { background: rgba(13,153,255,0.25); }
+
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover { background: #d93d1b; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(242,72,34,0.3); }
+    .btn-danger:active { background: #c03518; transform: translateY(0); }
+
+    .btn:disabled, .btn[disabled] { background: var(--bg-tertiary); color: var(--text-tertiary); cursor: not-allowed; border: 1px solid var(--border); transform: none !important; box-shadow: none !important; }
+
+    .btn-sm { height: 28px; padding: 0 10px; font-size: 12px; border-radius: var(--radius-sm); }
+    .btn-sm svg { width: 12px; height: 12px; }
+    .btn-lg { height: 44px; padding: 0 var(--sp-lg); font-size: 15px; border-radius: var(--radius-lg); }
+    .btn-lg svg { width: 16px; height: 16px; }
+    .btn-icon { padding: 0; aspect-ratio: 1; }
+    .btn-icon.btn-sm { width: 28px; }
+    .btn-icon:not(.btn-sm):not(.btn-lg) { width: 36px; }
+    .btn-icon.btn-lg { width: 44px; }
+
+    /* ========== 4. FORM CONTROLS ========== */
+    .input-group { margin-bottom: var(--sp-md); max-width: 320px; }
+    .input-label { display: block; font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 6px; }
+    .input { width: 100%; height: 36px; padding: 0 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text); font-size: 13px; font-family: inherit; transition: all 0.2s var(--ease); outline: none; }
+    .input::placeholder { color: var(--text-tertiary); }
+    .input:hover { border-color: var(--border-strong); }
+    .input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(13,153,255,0.15); }
+    .input-error { border-color: var(--danger) !important; }
+    .input-error:focus { box-shadow: 0 0 0 3px rgba(242,72,34,0.15) !important; }
+    .input-hint { font-size: 11px; color: var(--text-tertiary); margin-top: 4px; }
+    .input-hint.error { color: var(--danger); }
+
+    /* Dropdown */
+    .dropdown { position: relative; max-width: 320px; }
+    .dropdown-trigger { width: 100%; height: 36px; padding: 0 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text); font-size: 13px; font-family: inherit; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s var(--ease); outline: none; }
+    .dropdown-trigger:hover { border-color: var(--border-strong); background: var(--bg-tertiary); }
+    .dropdown-trigger:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(13,153,255,0.15); }
+    .dropdown-trigger svg { width: 16px; height: 16px; color: var(--text-tertiary); }
+    .dropdown-menu { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 4px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 10; display: none; }
+    .dropdown.open .dropdown-menu { display: block; animation: dropdownIn 0.15s var(--ease); }
+    .dropdown-item { padding: 8px 12px; font-size: 13px; border-radius: var(--radius-sm); cursor: pointer; transition: background 0.15s; display: flex; align-items: center; gap: var(--sp-sm); }
+    .dropdown-item:hover { background: var(--brand-muted); color: var(--text-brand); }
+    .dropdown-item.selected { color: var(--brand); }
+    .dropdown-item.selected::after { content: '✓'; margin-left: auto; font-size: 12px; }
+    @keyframes dropdownIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Checkbox */
+    .checkbox-wrap { display: flex; align-items: center; gap: var(--sp-sm); cursor: pointer; font-size: 13px; margin-bottom: var(--sp-sm); }
+    .checkbox-wrap input[type="checkbox"] { display: none; }
+    .checkbox-box { width: 18px; height: 18px; border: 1.5px solid var(--border-strong); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; transition: all 0.2s var(--ease); flex-shrink: 0; }
+    .checkbox-wrap input:checked + .checkbox-box { background: var(--brand); border-color: var(--brand); }
+    .checkbox-wrap input:checked + .checkbox-box svg { opacity: 1; }
+    .checkbox-box svg { width: 12px; height: 12px; color: #fff; opacity: 0; transition: opacity 0.15s; }
+    .checkbox-wrap input:disabled + .checkbox-box { opacity: 0.4; }
+
+    /* Toggle */
+    .toggle-wrap { display: flex; align-items: center; gap: var(--sp-sm); cursor: pointer; font-size: 13px; margin-bottom: var(--sp-sm); }
+    .toggle-wrap input { display: none; }
+    .toggle-track { width: 40px; height: 22px; background: var(--bg-elevated); border-radius: var(--radius-full); position: relative; transition: background 0.25s var(--ease); flex-shrink: 0; }
+    .toggle-thumb { width: 18px; height: 18px; background: #fff; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: transform 0.25s var(--ease); box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+    .toggle-wrap input:checked + .toggle-track { background: var(--brand); }
+    .toggle-wrap input:checked + .toggle-track .toggle-thumb { transform: translateX(18px); }
+
+    /* ========== 5. DRAG & DROP ========== */
+    .drop-zone { width: 100%; max-width: 400px; padding: var(--sp-2xl) var(--sp-lg); background: var(--bg-secondary); border: 2px dashed var(--border); border-radius: var(--radius-lg); cursor: pointer; transition: all 0.25s var(--ease); text-align: center; }
+    .drop-zone:hover { border-color: var(--brand); background: var(--brand-muted); }
+    .drop-zone.drag-over { border-color: var(--brand); border-style: solid; background: rgba(13,153,255,0.12); transform: scale(1.01); }
+    .drop-zone-icon { color: var(--brand); margin-bottom: var(--sp-md); opacity: 0.8; }
+    .drop-zone-text { font-size: 14px; font-weight: 500; color: var(--text-brand); margin-bottom: var(--sp-xs); }
+    .drop-zone-sub { font-size: 12px; color: var(--text-tertiary); }
+
+    /* ========== 6. FEEDBACK ========== */
+    /* Toasts */
+    .toast-demo-row { display: flex; flex-direction: column; gap: var(--sp-sm); margin-bottom: var(--sp-lg); max-width: 360px; }
+    .toast { display: flex; align-items: center; gap: var(--sp-sm); padding: 10px var(--sp-md); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; animation: toastIn 0.3s var(--ease); }
+    .toast-success { background: rgba(20,174,92,0.12); color: var(--success); border-left: 3px solid var(--success); }
+    .toast-error { background: rgba(242,72,34,0.12); color: var(--danger); border-left: 3px solid var(--danger); }
+    .toast-warning { background: rgba(245,166,35,0.12); color: var(--warning); border-left: 3px solid var(--warning); }
+    .toast-info { background: rgba(162,89,255,0.12); color: var(--info); border-left: 3px solid var(--info); }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Toast container for live demos */
+    .toast-container { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: var(--sp-sm); z-index: 1000; }
+    .toast-container .toast { animation: toastSlide 0.35s var(--ease); }
+    @keyframes toastSlide { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+
+    /* Progress Dots */
+    .progress-dots { display: flex; gap: var(--sp-sm); align-items: center; }
+    .progress-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--bg-elevated); transition: all 0.3s var(--ease); }
+    .progress-dot.active { background: var(--brand); transform: scale(1.3); }
+    .progress-dot.done { background: var(--success); }
+
+    /* ========== 7. DATA DISPLAY ========== */
+    /* Cards */
+    .card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--sp-lg); transition: all 0.25s var(--ease); }
+    .card:hover { border-color: var(--border-strong); box-shadow: 0 8px 24px rgba(0,0,0,0.4); transform: translateY(-3px); }
+    .card-title { font-size: 15px; font-weight: 600; margin-bottom: var(--sp-sm); }
+    .card-body { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+    /* Badges */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; font-size: 11px; font-weight: 600; border-radius: var(--radius-full); border: 1px solid var(--border); background: var(--bg-tertiary); color: var(--text-secondary); transition: all 0.2s; }
+    .badge-brand { background: var(--brand-muted); border-color: var(--brand); color: var(--text-brand); }
+    .badge-success { background: rgba(20,174,92,0.15); border-color: var(--success); color: var(--success); }
+    .badge-danger { background: rgba(242,72,34,0.15); border-color: var(--danger); color: var(--danger); }
+    .badge-warning { background: rgba(245,166,35,0.15); border-color: var(--warning); color: var(--warning); }
+
+    /* Tooltip */
+    .tooltip-wrap { position: relative; display: inline-block; }
+    .tooltip-wrap .tooltip-text { visibility: hidden; opacity: 0; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%) translateY(4px); background: var(--bg-elevated); color: var(--text); padding: 6px 10px; border-radius: var(--radius-sm); font-size: 12px; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.5); transition: all 0.2s var(--ease); pointer-events: none; z-index: 50; }
+    .tooltip-wrap .tooltip-text::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: var(--bg-elevated); }
+    .tooltip-wrap:hover .tooltip-text { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ========== 8. ICONS ========== */
+    .icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: var(--sp-sm); }
+    .icon-cell { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: var(--sp-md); background: var(--bg-secondary); border-radius: var(--radius-md); border: 1px solid transparent; transition: all 0.2s var(--ease); cursor: default; }
+    .icon-cell:hover { border-color: var(--border-brand); background: var(--brand-muted); }
+    .icon-cell svg { width: 20px; height: 20px; color: var(--text-secondary); }
+    .icon-cell:hover svg { color: var(--text-brand); }
+    .icon-cell span { font-size: 10px; color: var(--text-tertiary); }
+
+    /* ========== SCROLLBAR ========== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--bg-elevated); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+
+    /* Divider */
+    hr.ds-divider { border: none; border-top: 1px solid var(--border); margin: var(--sp-2xl) 0; }
+  </style>
+</head>
+<body>
+  <div class="ds-page">
+    <!-- HEADER -->
+    <header class="ds-header">
+      <h1>🎨 Design System</h1>
+      <p>Figma Token Importer — Component Reference</p>
+    </header>
+
+    <!-- NAV -->
+    <nav class="ds-nav" id="ds-nav">
+      <a href="#colors">Colors</a>
+      <a href="#typography">Typography</a>
+      <a href="#buttons">Buttons</a>
+      <a href="#forms">Forms</a>
+      <a href="#dragdrop">Drag & Drop</a>
+      <a href="#feedback">Feedback</a>
+      <a href="#data">Data Display</a>
+      <a href="#icons">Icons</a>
+    </nav>
+
+    <!-- 1. COLORS -->
+    <section class="ds-section" id="colors">
+      <h2 class="ds-section-title"><span class="section-icon" data-feather="droplet"></span> Color Palette</h2>
+      <p class="ds-section-desc">Core background, brand, semantic, and text colors used throughout the plugin.</p>
+
+      <div class="ds-label">Backgrounds</div>
+      <div class="ds-grid" style="margin-bottom: var(--sp-lg);">
+        <div class="color-card"><div class="color-swatch" style="background:#1e1e1e"></div><div class="color-meta"><div class="color-name">Background</div><div class="color-hex">#1e1e1e</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#2c2c2c"></div><div class="color-meta"><div class="color-name">Secondary</div><div class="color-hex">#2c2c2c</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#383838"></div><div class="color-meta"><div class="color-name">Tertiary</div><div class="color-hex">#383838</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#3a3a3c"></div><div class="color-meta"><div class="color-name">Elevated</div><div class="color-hex">#3a3a3c</div></div></div>
+      </div>
+
+      <div class="ds-label">Brand & Semantic</div>
+      <div class="ds-grid" style="margin-bottom: var(--sp-lg);">
+        <div class="color-card"><div class="color-swatch" style="background:#0d99ff"></div><div class="color-meta"><div class="color-name">Brand Blue</div><div class="color-hex">#0d99ff</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#14ae5c"></div><div class="color-meta"><div class="color-name">Success</div><div class="color-hex">#14ae5c</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#f5a623"></div><div class="color-meta"><div class="color-name">Warning</div><div class="color-hex">#f5a623</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#f24822"></div><div class="color-meta"><div class="color-name">Danger</div><div class="color-hex">#f24822</div></div></div>
+      </div>
+
+      <div class="ds-label">Text</div>
+      <div class="ds-grid">
+        <div class="color-card"><div class="color-swatch" style="background:#ffffff"></div><div class="color-meta"><div class="color-name">Primary</div><div class="color-hex">#ffffff</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#b3b3b3"></div><div class="color-meta"><div class="color-name">Secondary</div><div class="color-hex">#b3b3b3</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#8c8c8c"></div><div class="color-meta"><div class="color-name">Tertiary</div><div class="color-hex">#8c8c8c</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#4ecaff"></div><div class="color-meta"><div class="color-name">Brand Text</div><div class="color-hex">#4ecaff</div></div></div>
+      </div>
+    </section>
+
+    <hr class="ds-divider" />
+
+    <!-- 2. TYPOGRAPHY -->
+    <section class="ds-section" id="typography">
+      <h2 class="ds-section-title"><span class="section-icon" data-feather="type"></span> Typography</h2>
+      <p class="ds-section-desc">Inter typeface across 6 scales, using tight letter-spacing for a refined feel.</p>
+      <div class="type-row"><div class="type-sample" style="font-size:32px;font-weight:700;letter-spacing:-0.03em">Display Heading</div><div class="type-meta">32 / 700 / -0.03em</div></div>
+      <div class="type-row"><div class="type-sample" style="font-size:22px;font-weight:600;letter-spacing:-0.02em">Title</div><div class="type-meta">22 / 600 / -0.02em</div></div>
+      <div class="type-row"><div class="type-sample" style="font-size:17px;font-weight:600">Section Header</div><div class="type-meta">17 / 600</div></div>
+      <div class="type-row"><div class="type-sample" style="font-size:15px;font-weight:400">Body text — The quick brown fox jumps over the lazy dog.</div><div class="type-meta">15 / 400</div></div>
+      <div class="type-row"><div class="type-sample" style="font-size:13px;font-weight:400;color:var(--text-secondary)">Caption text for labels and helper content.</div><div class="type-meta">13 / 400</div></div>
+      <div class="type-row"><div class="type-sample" style="font-size:11px;font-family:'SF Mono',Monaco,monospace;color:var(--text-tertiary)">token.colors.primary → #0d99ff</div><div class="type-meta">11 / Mono</div></div>
+    </section>
+
+    <hr class="ds-divider" />
+
+    <!-- 3. BUTTONS -->
+    <section class="ds-section" id="buttons">
+      <h2 class="ds-section-title"><span class="section-icon" data-feather="mouse-pointer"></span> Buttons</h2>
+      <p class="ds-section-desc">5 variants × 3 sizes. All include subtle hover lift and focus ring.</p>
+
+      <div class="ds-label">Variants — Text Only</div>
+      <div class="ds-row">
+        <button class="btn btn-primary">Primary</button>
+        <button class="btn btn-secondary">Secondary</button>
+        <button class="btn btn-ghost">Ghost</button>
+        <button class="btn btn-danger">Danger</button>
+        <button class="btn btn-primary" disabled>Disabled</button>
+      </div>
+
+      <div class="ds-label">With Icon</div>
+      <div class="ds-row">
+        <button class="btn btn-primary"><i data-feather="plus"></i> New Project</button>
+        <button class="btn btn-secondary"><i data-feather="upload"></i> Import</button>
+        <button class="btn btn-ghost"><i data-feather="external-link"></i> Open</button>
+        <button class="btn btn-danger"><i data-feather="trash-2"></i> Delete</button>
+      </div>
+
+      <div class="ds-label">Sizes</div>
+      <div class="ds-row">
+        <button class="btn btn-primary btn-sm">Small</button>
+        <button class="btn btn-primary">Default</button>
+        <button class="btn btn-primary btn-lg">Large</button>
+      </div>
+
+      <div class="ds-label">Icon Only</div>
+      <div class="ds-row">
+        <button class="btn btn-secondary btn-icon btn-sm"><i data-feather="x"></i></button>
+        <button class="btn btn-secondary btn-icon"><i data-feather="more-horizontal"></i></button>
+        <button class="btn btn-primary btn-icon"><i data-feather="download"></i></button>
+        <button class="btn btn-ghost btn-icon"><i data-feather="copy"></i></button>
+      </div>
+    </section>
+
+    <hr class="ds-divider" />
+
+    <!-- 4. FORMS -->
+    <section class="ds-section" id="forms">
+      <h2 class="ds-section-title"><span class="section-icon" data-feather="edit-3"></span> Form Controls</h2>
+      <p class="ds-section-desc">Inputs, dropdowns, checkboxes, and toggles with focus, error, and disabled states.</p>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: var(--sp-lg);">
+        <!-- Column 1: Inputs -->
+        <div>
+          <div class="ds-label">Text Input</div>
+          <div class="input-group">
+            <label class="input-label">Collection Name</label>
+            <input class="input" type="text" placeholder="e.g. Brand Tokens" />
+          </div>
+          <div class="input-group">
+            <label class="input-label">With Error</label>
+            <input class="input input-error" type="text" value="invalid-format" />
+            <div class="input-hint error">File format not supported.</div>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Disabled</label>
+            <input class="input" type="text" value="locked" disabled style="opacity:0.5;cursor:not-allowed" />
+          </div>
+
+          <div class="ds-label" style="margin-top:var(--sp-lg)">Dropdown</div>
+          <div class="dropdown" id="demo-dropdown">
+            <button class="dropdown-trigger" onclick="toggleDropdown()">
+              <span id="dropdown-value">New Collection</span>
+              <i data-feather="chevron-down"></i>
+            </button>
+            <div class="dropdown-menu">
+              <div class="dropdown-item selected" onclick="selectDropdown(this,'New Collection')">New Collection</div>
+              <div class="dropdown-item" onclick="selectDropdown(this,'Brand Colors')">Brand Colors</div>
+              <div class="dropdown-item" onclick="selectDropdown(this,'Spacing')">Spacing</div>
+              <div class="dropdown-item" onclick="selectDropdown(this,'Typography')">Typography</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 2: Checks & Toggles -->
+        <div>
+          <div class="ds-label">Checkboxes</div>
+          <label class="checkbox-wrap">
+            <input type="checkbox" checked />
+            <span class="checkbox-box"><svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            Import colors
+          </label>
+          <label class="checkbox-wrap">
+            <input type="checkbox" />
+            <span class="checkbox-box"><svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            Import spacing
+          </label>
+          <label class="checkbox-wrap">
+            <input type="checkbox" disabled />
+            <span class="checkbox-box"><svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span style="opacity:0.4">Disabled option</span>
+          </label>
+
+          <div class="ds-label" style="margin-top: var(--sp-lg)">Toggle Switches</div>
+          <label class="toggle-wrap">
+            <input type="checkbox" checked />
+            <div class="toggle-track"><div class="toggle-thumb"></div></div>
+            Overwrite existing
+          </label>
+          <label class="toggle-wrap">
+            <input type="checkbox" />
+            <div class="toggle-track"><div class="toggle-thumb"></div></div>
+            Flatten groups
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <hr class="ds-divider" />
+
+    <!-- 5. DRAG & DROP -->
+    <section class="ds-section" id="dragdrop">
+      <h2 class="ds-section-title"><span class="section-icon" data-feather="upload-cloud"></span> Drag & Drop</h2>
+      <p class="ds-section-desc">Drop zone with visual feedback on hover and active drag. Try dragging a file over it.</p>
+      <div class="drop-zone" id="demo-dropzone">
+        <div class="drop-zone-icon"><i data-feather="upload" style="width:40px;height:40px"></i></div>
+        <div class="drop-zone-text">Choose Files</div>
+        <div class="drop-zone-sub">or drag & drop .json / .csv here</div>
+      </div>
+    </section>
+
+    <hr class="ds-divider" />
+
+    <!-- 6. FEEDBACK -->
+    <section class="ds-section" id="feedback">
+      <h2 class="ds-section-title"><span class="section-icon" data-feather="bell"></span> Feedback</h2>
+      <p class="ds-section-desc">Toast notifications and progress indicators for user feedback.</p>
+
+      <div class="ds-label">Toast Variants (static)</div>
+      <div class="toast-demo-row">
+        <div class="toast toast-success"><i data-feather="check-circle" style="width:16px;height:16px"></i> Successfully imported</div>
+        <div class="toast toast-error"><i data-feather="alert-circle" style="width:16px;height:16px"></i> Import failed</div>
+        <div class="toast toast-warning"><i data-feather="alert-triangle" style="width:16px;height:16px"></i> Duplicate tokens</div>
+        <div class="toast toast-info"><i data-feather="info" style="width:16px;height:16px"></i> Processing…</div>
+      </div>
+
+      <div class="ds-label">Live Toast Demo (click)</div>
+      <div class="ds-row" style="margin-bottom: var(--sp-lg);">
+        <button class="btn btn-primary btn-sm" onclick="showToast('success','Tokens imported!')">Success</button>
+        <button class="btn btn-danger btn-sm" onclick="showToast('error','Something went wrong')">Error</button>
+        <button class="btn btn-secondary btn-sm" onclick="showToast('warning','Overwriting 3 tokens')">Warning</button>
+        <button class="btn btn-ghost btn-sm" onclick="showToast('info','Parsing file…')">Info</button>
+      </div>
+
+      <div class="ds-label">Progress Dots</div>
+      <div style="display:flex;gap:var(--sp-xl);align-items:center">
+        <div>
+          <div class="ds-label" style="margin-bottom:4px">Step 1</div>
+          <div class="progress-dots"><div class="progress-dot active"></div><div class="progress-dot"></div><div class="progress-dot"></div></div>
+        </div>
+        <div>
+          <div class="ds-label" style="margin-bottom:4px">Step 2</div>
+          <div class="progress-dots"><div class="progress-dot done"></div><div class="progress-dot active"></div><div class="progress-dot"></div></div>
+        </div>
+        <div>
+          <div class="ds-label" style="margin-bottom:4px">Complete</div>
+          <div class="progress-dots"><div class="progress-dot done"></div><div class="progress-dot done"></div><div class="progress-dot done"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="ds-divider" />
+
+    <!-- 7. DATA DISPLAY -->
+    <section class="ds-section" id="data">
+      <h2 class="ds-section-title"><span class="section-icon" data-feather="layout"></span> Data Display</h2>
+      <p class="ds-section-desc">Cards, badges, and tooltips for presenting information.</p>
+
+      <div class="ds-label">Cards</div>
+      <div class="ds-grid" style="margin-bottom: var(--sp-lg);">
+        <div class="card">
+          <div class="card-title">Color Tokens</div>
+          <div class="card-body">6 tokens imported from brand palette. Includes primary, secondary, and feedback colors.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Spacing Scale</div>
+          <div class="card-body">8pt grid system with 6 steps from 4px to 48px for consistent layout spacing.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Typography</div>
+          <div class="card-body">Inter font family, 6 weight variations. Optimized for display and UI text.</div>
+        </div>
+      </div>
+
+      <div class="ds-label">Badges</div>
+      <div class="ds-row" style="margin-bottom: var(--sp-lg);">
+        <span class="badge">Default</span>
+        <span class="badge badge-brand">Brand</span>
+        <span class="badge badge-success">Success</span>
+        <span class="badge badge-danger">Error</span>
+        <span class="badge badge-warning">Warning</span>
+      </div>
+
+      <div class="ds-label">Tooltips (hover)</div>
+      <div class="ds-row">
+        <div class="tooltip-wrap">
+          <button class="btn btn-secondary btn-sm"><i data-feather="info"></i> Hover me</button>
+          <span class="tooltip-text">This is a tooltip</span>
+        </div>
+        <div class="tooltip-wrap">
+          <span class="badge badge-brand">Beta</span>
+          <span class="tooltip-text">Feature in development</span>
+        </div>
+      </div>
+    </section>
+
+    <hr class="ds-divider" />
+
+    <!-- 8. ICONS -->
+    <section class="ds-section" id="icons">
+      <h2 class="ds-section-title"><span class="section-icon" data-feather="feather"></span> Icons — Feather</h2>
+      <p class="ds-section-desc">Lightweight, open-source icons at 20×20. Loaded via CDN.</p>
+      <div class="icon-grid" id="icon-grid"></div>
+    </section>
+
+  </div>
+
+  <!-- Toast container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script>
+    // Init Feather icons
+    feather.replace();
+
+    // Populate icon grid with commonly-used Feather icons
+    const iconNames = [
+      'upload','download','file','file-text','folder','settings','search',
+      'plus','minus','x','check','chevron-down','chevron-right','arrow-left',
+      'arrow-right','eye','eye-off','copy','clipboard','edit-2','trash-2',
+      'refresh-cw','external-link','link','lock','unlock','info','alert-circle',
+      'alert-triangle','check-circle','bell','star','heart','zap','layers',
+      'grid','list','filter','sliders','code','terminal','package','box'
+    ];
+    const grid = document.getElementById('icon-grid');
+    iconNames.forEach(name => {
+      const cell = document.createElement('div');
+      cell.className = 'icon-cell';
+      cell.innerHTML = `<i data-feather="${name}"></i><span>${name}</span>`;
+      grid.appendChild(cell);
+    });
+    feather.replace(); // re-run for dynamic icons
+
+    // Dropdown
+    function toggleDropdown() {
+      document.getElementById('demo-dropdown').classList.toggle('open');
+    }
+    function selectDropdown(el, value) {
+      document.getElementById('dropdown-value').textContent = value;
+      el.parentElement.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('selected'));
+      el.classList.add('selected');
+      document.getElementById('demo-dropdown').classList.remove('open');
+    }
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#demo-dropdown')) {
+        document.getElementById('demo-dropdown').classList.remove('open');
+      }
+    });
+
+    // Drop zone drag events
+    const dz = document.getElementById('demo-dropzone');
+    dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('drag-over'); });
+    dz.addEventListener('dragleave', () => { dz.classList.remove('drag-over'); });
+    dz.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dz.classList.remove('drag-over');
+      const ct = dz.querySelector('.drop-zone-text');
+      ct.textContent = `${e.dataTransfer.files.length} file(s) dropped`;
+      ct.style.color = 'var(--success)';
+    });
+
+    // Toast system
+    function showToast(type, message) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      const iconMap = { success: 'check-circle', error: 'alert-circle', warning: 'alert-triangle', info: 'info' };
+      toast.innerHTML = `<i data-feather="${iconMap[type]}" style="width:16px;height:16px"></i> ${message}`;
+      container.appendChild(toast);
+      feather.replace();
+      setTimeout(() => {
+        toast.style.transition = 'opacity 0.3s, transform 0.3s';
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(40px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 2500);
+    }
+  </script>
+</body>
+</html>

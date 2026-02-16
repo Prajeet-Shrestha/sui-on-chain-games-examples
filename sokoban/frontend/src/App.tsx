@@ -61,7 +61,7 @@ function App() {
       {!isConnected ? (
         <div className="connect-prompt">
           <SpriteAnimation
-            src="/Pink_Monster_PushRight_6.png"
+            src={`${import.meta.env.BASE_URL}Pink_Monster_PushRight_6.png`}
             frameCount={6}
             frameWidth={32}
             frameHeight={32}

@@ -10,10 +10,11 @@ const CANVAS_H = GRID_H * CELL_PX;
 
 // Sprite sheet config (all 32×32 per frame)
 const SPRITE_SIZE = 32;
+const base = import.meta.env.BASE_URL;
 const SPRITE_SHEETS = {
-  idle:      { src: '/Pink_Monster_Idle_4.png',      frames: 4 },
-  pushRight: { src: '/Pink_Monster_PushRight_6.png', frames: 6 },
-  pushUp:    { src: '/Pink_Monster_PushUp_4.png',    frames: 4 },
+  idle:      { src: `${base}Pink_Monster_Idle_4.png`,      frames: 4 },
+  pushRight: { src: `${base}Pink_Monster_PushRight_6.png`, frames: 6 },
+  pushUp:    { src: `${base}Pink_Monster_PushUp_4.png`,    frames: 4 },
 } as const;
 
 const ANIM_FPS = 8; // frames per second
@@ -59,7 +60,7 @@ export function GameBoard() {
   // Load tileset + all sprite sheets once
   useEffect(() => {
     const tileImg = new Image();
-    tileImg.src = '/tileset.png';
+    tileImg.src = `${base}tileset.png`;
     tileImg.onload = () => { imgRef.current = tileImg; };
 
     (Object.keys(SPRITE_SHEETS) as AnimKey[]).forEach((key) => {

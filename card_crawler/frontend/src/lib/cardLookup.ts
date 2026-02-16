@@ -1,5 +1,7 @@
 import cardData from '../data/cards.json';
 
+const base = import.meta.env.BASE_URL;
+
 interface CardLookupResult {
     imageUrl: string;
     cardTypeName: string;
@@ -50,7 +52,7 @@ export function lookupCard(name: string): CardLookupResult | null {
     const card = cardsByName.get(name);
     if (!card) return null;
     return {
-        imageUrl: card.url,
+        imageUrl: `${base}${card.url.replace(/^\//, '')}`,
         cardTypeName: card.cardTypeName,
         description: card.stats.description,
         value: card.stats.value,
@@ -64,7 +66,7 @@ export function lookupEnemy(name: string): EnemyLookupResult | null {
     const enemy = enemiesByName.get(name);
     if (!enemy) return null;
     return {
-        imageUrl: enemy.url,
+        imageUrl: `${base}${enemy.url.replace(/^\//, '')}`,
         nodeType: enemy.nodeType,
         floor: enemy.floor,
         name: enemy.name,
@@ -81,7 +83,7 @@ export function lookupEnemyByStats(maxHp: number, atk: number): EnemyLookupResul
     );
     if (!enemy) return null;
     return {
-        imageUrl: enemy.url,
+        imageUrl: `${base}${enemy.url.replace(/^\//, '')}`,
         nodeType: enemy.nodeType,
         floor: enemy.floor,
         name: enemy.name,
@@ -95,7 +97,7 @@ export function lookupRelic(name: string): RelicLookupResult | null {
     const relic = relicsByName.get(name);
     if (!relic) return null;
     return {
-        imageUrl: relic.url,
+        imageUrl: `${base}${relic.url.replace(/^\//, '')}`,
         effect: relic.stats.effect,
         shopCost: relic.stats.shopCost,
     };
@@ -105,5 +107,5 @@ export function lookupRelic(name: string): RelicLookupResult | null {
  * Get the player character image URL
  */
 export function getPlayerImageUrl(): string {
-    return cardData.player.url;
+    return `${base}${cardData.player.url.replace(/^\//, '')}`;
 }

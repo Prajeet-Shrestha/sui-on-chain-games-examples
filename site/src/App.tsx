@@ -61,22 +61,40 @@ export default function App() {
     <div className="root">
       {/* ── Navbar ── */}
       <nav className="navbar">
+        <button className="hamburger" aria-label="Menu">
+          <span /><span /><span />
+        </button>
+
         <a href="#" className="logo">
-          <div className="logo-icon">⛓</div>
-          <span className="logo-text">Makara Games</span>
+          <img src="/logo_full.png" alt="Makara Gaming" className="logo-img" />
         </a>
+
         <div className="search-wrap">
-          {/* <span className="search-icon">🔍</span> */}
+          <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input
             className="search-input"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search games..."
+            placeholder={`Search ${GAMES.length} games...`}
           />
         </div>
-        <div className="nav-right">
-          <span className="nav-count">{GAMES.length} Games</span>
+
+        <div className="nav-socials">
+          {/* Twitter / X */}
+          <a href="#" className="social-btn social-twitter" aria-label="Twitter">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          {/* Telegram */}
+          <a href="#" className="social-btn social-telegram" aria-label="Telegram">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12.056 0h-.112zM17.05 7.31c.149-.01.31.035.384.13.06.08.078.186.068.3-.11 1.17-.585 4.01-0.827 5.32-.102.555-.303.74-.498.758-.423.04-.744-.28-1.154-.548-.641-.42-1.003-.68-1.626-1.09-.72-.473-.253-.733.157-1.158.107-.11 1.972-1.808 2.008-1.963.005-.02.009-.089-.033-.126-.042-.036-.104-.024-.149-.014-.064.014-1.078.685-3.042 2.013-.288.198-.549.295-.782.29-.257-.005-.752-.146-1.12-.266-.451-.148-.81-.226-.779-.477.017-.131.196-.265.539-.402 2.112-.92 3.52-1.527 4.224-1.823 2.013-.843 2.432-0.99 2.705-0.995z"/></svg>
+          </a>
+          {/* Reddit */}
+          <a href="#" className="social-btn social-reddit" aria-label="Reddit">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.249-.561 1.249-1.249 0-.688-.562-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 0-.462.342.342 0 0 0-.461 0c-.545.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.206-.095z"/></svg>
+          </a>
         </div>
+
+        <a href="#" className="signin-btn">Sign in</a>
       </nav>
 
       {/* ── Layout ── */}

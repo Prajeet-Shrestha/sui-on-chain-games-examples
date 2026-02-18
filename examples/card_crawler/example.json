@@ -1,0 +1,7 @@
+{
+  "name": "Card Crawler",
+  "slug": "card-crawler",
+  "tags": ["Strategy", "Deck Builder"],
+  "description": "A deck-building dungeon crawler. Draft cards, fight monsters, and survive the dungeon — all verified on-chain.",
+  "hasFrontend": true
+}

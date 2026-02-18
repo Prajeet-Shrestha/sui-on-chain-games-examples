@@ -1,3 +1,66 @@
+#!/bin/bash
+set -e
+
+# ──────────────────────────────────────────────────────────
+#  generate-site.sh — Regenerate site/index.html from
+#                      examples/*/example.json manifests
+# ──────────────────────────────────────────────────────────
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SITE_DIR="$SCRIPT_DIR/site"
+INDEX="$SITE_DIR/index.html"
+
+mkdir -p "$SITE_DIR"
+
+# ── Collect game cards HTML ──────────────────────────────
+CARDS=""
+COUNT=0
+
+for manifest in "$SCRIPT_DIR"/examples/*/example.json; do
+  [ -f "$manifest" ] || continue
+  EXAMPLE_DIR="$(dirname "$manifest")"
+
+  NAME=$(python3 -c "import json,sys; print(json.load(open('$manifest'))['name'])")
+  SLUG=$(python3 -c "import json,sys; print(json.load(open('$manifest'))['slug'])")
+  DESC=$(python3 -c "import json,sys; print(json.load(open('$manifest'))['description'])")
+  TAGS_JSON=$(python3 -c "import json,sys; print(json.dumps(json.load(open('$manifest'))['tags']))")
+
+  # Build tags HTML
+  TAGS_HTML=""
+  TAG_COUNT=$(python3 -c "import json,sys; print(len(json.load(open('$manifest'))['tags']))")
+  for (( i=0; i<TAG_COUNT; i++ )); do
+    TAG=$(python3 -c "import json,sys; print(json.load(open('$manifest'))['tags'][$i])")
+    TAGS_HTML+="            <span class=\"tag\">$TAG</span>"$'\n'
+  done
+  TAGS_HTML+="            <span class=\"tag tag-free\">FREE</span>"
+
+  # Cover image: use cover.png from example dir
+  COVER_SRC="${SLUG}-cover.png"
+  if [ -f "$EXAMPLE_DIR/cover.png" ]; then
+    cp "$EXAMPLE_DIR/cover.png" "$SITE_DIR/$COVER_SRC"
+  fi
+
+  CARDS+="
+      <a href=\"/${SLUG}/\" class=\"game-card\">
+        <div class=\"card-banner\">
+          <img src=\"${COVER_SRC}\" alt=\"${NAME}\" />
+          <div class=\"title-overlay\"><h2>${NAME}</h2></div>
+        </div>
+        <div class=\"card-body\">
+          <div class=\"card-meta\">
+${TAGS_HTML}
+          </div>
+          <p class=\"card-desc\">${DESC}</p>
+        </div>
+      </a>
+"
+  COUNT=$((COUNT + 1))
+done
+
+echo "📄 Found $COUNT example(s)"
+
+# ── Write index.html ─────────────────────────────────────
+cat > "$INDEX" <<'HEADER'
 <!doctype html>
 <html lang="en">
 <head>
@@ -217,52 +280,13 @@
 
     <!-- GAMES -->
     <div class="games-grid">
+HEADER
 
-      <a href="/card-crawler/" class="game-card">
-        <div class="card-banner">
-          <img src="card-crawler-cover.png" alt="Card Crawler" />
-          <div class="title-overlay"><h2>Card Crawler</h2></div>
-        </div>
-        <div class="card-body">
-          <div class="card-meta">
-            <span class="tag">Strategy</span>
-            <span class="tag">Deck Builder</span>
-            <span class="tag tag-free">FREE</span>
-          </div>
-          <p class="card-desc">A deck-building dungeon crawler. Draft cards, fight monsters, and survive the dungeon — all verified on-chain.</p>
-        </div>
-      </a>
+# ── Append cards ─────────────────────────────────────────
+echo "$CARDS" >> "$INDEX"
 
-      <a href="/sokoban/" class="game-card">
-        <div class="card-banner">
-          <img src="sokoban-cover.png" alt="Sokoban" />
-          <div class="title-overlay"><h2>Sokoban</h2></div>
-        </div>
-        <div class="card-body">
-          <div class="card-meta">
-            <span class="tag">Puzzle</span>
-            <span class="tag">Pixel Art</span>
-            <span class="tag tag-free">FREE</span>
-          </div>
-          <p class="card-desc">The classic box-pushing puzzle game, reimagined with pixel art and on-chain solution verification.</p>
-        </div>
-      </a>
-
-      <a href="/tactics-ogre/" class="game-card">
-        <div class="card-banner">
-          <img src="tactics-ogre-cover.png" alt="Tactics Ogre" />
-          <div class="title-overlay"><h2>Tactics Ogre</h2></div>
-        </div>
-        <div class="card-body">
-          <div class="card-meta">
-            <span class="tag">Tactics</span>
-            <span class="tag">RPG</span>
-            <span class="tag tag-free">FREE</span>
-          </div>
-          <p class="card-desc">A tactical RPG with squad management, turn-based combat on isometric grids, and full on-chain battles.</p>
-        </div>
-      </a>
-
+# ── Close HTML ───────────────────────────────────────────
+cat >> "$INDEX" <<'FOOTER'
     </div>
 
     <!-- FOOTER -->
@@ -273,3 +297,6 @@
 
 </body>
 </html>
+FOOTER
+
+echo "✅ Generated $INDEX with $COUNT game card(s)"

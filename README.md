@@ -5,11 +5,16 @@ Workable examples of **fully on-chain games** built on [Sui](https://sui.io) usi
 
 ## Games
 
-| Game | Description |
-|------|-------------|
-| [Card Crawler](./examples/card_crawler/) | A roguelike deck-building dungeon crawler with combat, shops, rest stops, and boss fights — all on-chain |
-| [Sokoban](./examples/sokoban/) | The classic box-pushing puzzle game with pixel art and on-chain solution verification |
-| [Tactics Ogre](./examples/tactics_ogre/) | A tactical RPG with squad management, turn-based combat on isometric grids, and full on-chain battles |
+| Game | Tags | Description |
+|------|------|-------------|
+| [Card Crawler](./examples/card_crawler/) | Strategy, Deck Builder | A deck-building dungeon crawler. Draft cards, fight monsters, and survive the dungeon — all verified on-chain |
+| [Flappy Bird](./examples/flappy_bird/) | Arcade, Casual | A decentralized clone of the classic Flappy Bird game |
+| [Maze Game](./examples/maze_game/) | Puzzle, Strategy | Navigate through a maze on the Sui blockchain |
+| [Sokoban](./examples/sokoban/) | Puzzle, Pixel Art | The classic box-pushing puzzle game, reimagined with pixel art and on-chain solution verification |
+| [SuiCraft](./examples/sandbox_game/) | Sandbox, Building | A fully on-chain sandbox game on Sui |
+| [Sui Tetris](./examples/tetris_game/) | Arcade, Puzzle | A fully on-chain Tetris game |
+| [Tactics Ogre](./examples/tactics_ogre/) | Multi-Players, Tactics, RPG | A tactical RPG with squad management, turn-based combat on isometric grids, and full on-chain battles |
+| [Virus Game](./examples/virus_game/) | Puzzle, Strategy | Change your color to match neighboring cells and absorb them. Conquer the entire grid before you run out of moves |
 
 ## Getting Started
 
@@ -26,6 +31,16 @@ chmod +x setup_agent.sh
 
 ```bash
 cd examples/card_crawler/frontend
+npm install
+npm run dev
+```
+
+### 3. Run the Landing Page
+
+The landing page is a Vite + React app that auto-discovers all games from their `example.json` manifests.
+
+```bash
+cd site
 npm install
 npm run dev
 ```
@@ -54,13 +69,7 @@ npm run dev
 | `description` | Short description shown below the tags |
 | `hasFrontend` | If `true`, `build-site.sh` will build `frontend/` with Vite |
 
-4. Regenerate the landing page:
-
-```bash
-./generate-site.sh
-```
-
-This reads all `examples/*/example.json` manifests and regenerates `site/index.html` automatically.
+The landing page discovers new examples automatically — no manual site regeneration needed.
 
 ## Agent Skills
 

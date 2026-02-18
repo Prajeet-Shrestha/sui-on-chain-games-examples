@@ -1,7 +1,7 @@
 {
   "name": "Tactics Ogre",
   "slug": "tactics-ogre",
-  "tags": ["Tactics", "RPG"],
+  "tags": ["Multi-Players","Tactics", "RPG"],
   "description": "A tactical RPG with squad management, turn-based combat on isometric grids, and full on-chain battles.",
   "hasFrontend": true
 }

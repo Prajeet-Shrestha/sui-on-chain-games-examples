@@ -25,10 +25,42 @@ chmod +x setup_agent.sh
 ### 2. Run a Game Frontend
 
 ```bash
-cd card_crawler/frontend
+cd examples/card_crawler/frontend
 npm install
 npm run dev
 ```
+
+## Adding a New Example
+
+1. Create a folder under `examples/` (use underscores, e.g. `tic_tac_toe`)
+2. Add a `cover.png` image (used as the card banner on the landing page)
+3. Create an `example.json` manifest:
+
+```json
+{
+  "name": "Tic-Tac-Toe",
+  "slug": "tic-tac-toe",
+  "tags": ["Strategy", "Classic"],
+  "description": "The classic two-player game, fully on-chain.",
+  "hasFrontend": true
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `name` | Display name shown on the game card |
+| `slug` | URL path segment (e.g. `/tic-tac-toe/`) and dist folder name |
+| `tags` | Array of category tags displayed on the card |
+| `description` | Short description shown below the tags |
+| `hasFrontend` | If `true`, `build-site.sh` will build `frontend/` with Vite |
+
+4. Regenerate the landing page:
+
+```bash
+./generate-site.sh
+```
+
+This reads all `examples/*/example.json` manifests and regenerates `site/index.html` automatically.
 
 ## Agent Skills
 

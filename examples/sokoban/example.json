@@ -1,0 +1,7 @@
+{
+  "name": "Sokoban",
+  "slug": "sokoban",
+  "tags": ["Puzzle", "Pixel Art"],
+  "description": "The classic box-pushing puzzle game, reimagined with pixel art and on-chain solution verification.",
+  "hasFrontend": true
+}

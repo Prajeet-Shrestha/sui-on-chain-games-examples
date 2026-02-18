@@ -1,0 +1,36 @@
+#!/bin/bash
+# ──────────────────────────────────────────────────────────
+#  pre-commit hook — Validate vite base paths
+#  Ensures every frontend example has the correct
+#  base: '/<slug>/' in its vite.config.ts
+# ──────────────────────────────────────────────────────────
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+ERRORS=0
+
+for manifest in "$REPO_ROOT"/examples/*/example.json; do
+  [ -f "$manifest" ] || continue
+  EXAMPLE_DIR="$(dirname "$manifest")"
+  VITE_CONFIG="$EXAMPLE_DIR/frontend/vite.config.ts"
+
+  HAS_FRONTEND=$(python3 -c "import json; print(json.load(open('$manifest')).get('hasFrontend', False))")
+  [ "$HAS_FRONTEND" = "True" ] || continue
+  [ -f "$VITE_CONFIG" ] || continue
+
+  SLUG=$(python3 -c "import json; print(json.load(open('$manifest'))['slug'])")
+  NAME=$(python3 -c "import json; print(json.load(open('$manifest'))['name'])")
+  EXPECTED_BASE="/$SLUG/"
+
+  if ! grep -q "base:.*['\"]${EXPECTED_BASE}['\"]" "$VITE_CONFIG"; then
+    echo "❌ $NAME — vite.config.ts is missing base: '$EXPECTED_BASE'"
+    echo "   Assets will fail to load when deployed at /$SLUG/"
+    echo ""
+    ERRORS=$((ERRORS + 1))
+  fi
+done
+
+if [ $ERRORS -gt 0 ]; then
+  echo "🚫 Commit blocked: $ERRORS example(s) have incorrect vite base paths."
+  echo "   Add base: '/<slug>/' to each vite.config.ts to fix."
+  exit 1
+fi

@@ -13,7 +13,8 @@ echo "🧹 Cleaning previous build..."
 rm -rf "$DIST_DIR"
 mkdir -p "$DIST_DIR"
 
-# ── Build each example ───────────────────────────────────
+# ── Build each example (parallel where possible) ─────────
+PIDS=()
 for manifest in "$SCRIPT_DIR"/examples/*/example.json; do
   [ -f "$manifest" ] || continue
   EXAMPLE_DIR="$(dirname "$manifest")"
@@ -27,14 +28,31 @@ for manifest in "$SCRIPT_DIR"/examples/*/example.json; do
     FRONTEND_DIR="$EXAMPLE_DIR/frontend"
     if [ -d "$FRONTEND_DIR" ] && [ -f "$FRONTEND_DIR/package.json" ]; then
       echo "🔨 Building $NAME..."
-      cd "$FRONTEND_DIR"
-      npx vite build
-      cp -r dist/ "$DIST_DIR/$SLUG"
+      (
+        cd "$FRONTEND_DIR"
+        npx vite build
+        mkdir -p "$DIST_DIR/$SLUG"
+        cp -r dist/* "$DIST_DIR/$SLUG/"
+      ) &
+      PIDS+=($!)
     else
       echo "⚠️  Skipping $NAME — no frontend/package.json found"
     fi
   fi
 done
+
+# Wait for all parallel builds to finish
+FAILED=0
+for pid in "${PIDS[@]}"; do
+  if ! wait "$pid"; then
+    FAILED=1
+  fi
+done
+
+if [ "$FAILED" -ne 0 ]; then
+  echo "❌ One or more game builds failed!"
+  exit 1
+fi
 
 # ── Build landing site (React + Vite) ────────────────────
 echo "🏠 Building landing site..."

@@ -1,20 +1,13 @@
 #!/bin/bash
 set -e
 
+# With npm workspaces, a single install at root handles all packages.
+# Shared deps (react, @mysten/sui, vite, etc.) are hoisted and installed once.
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-echo "📦 Installing site dependencies..."
-cd "$SCRIPT_DIR/site"
+echo "📦 Installing all workspace dependencies..."
+cd "$SCRIPT_DIR"
 npm ci
-
-echo "📦 Installing dependencies for all examples..."
-
-for dir in "$SCRIPT_DIR"/examples/*/frontend; do
-  if [ -f "$dir/package.json" ]; then
-    echo "  → $(basename "$(dirname "$dir")")/frontend"
-    cd "$dir"
-    npm ci
-  fi
-done
 
 echo "✅ All dependencies installed!"

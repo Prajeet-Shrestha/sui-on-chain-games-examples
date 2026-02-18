@@ -13,10 +13,6 @@ echo "🧹 Cleaning previous build..."
 rm -rf "$DIST_DIR"
 mkdir -p "$DIST_DIR"
 
-# ── Regenerate landing page from manifests ───────────────
-echo "📄 Regenerating landing page..."
-bash "$SCRIPT_DIR/generate-site.sh"
-
 # ── Build each example ───────────────────────────────────
 for manifest in "$SCRIPT_DIR"/examples/*/example.json; do
   [ -f "$manifest" ] || continue
@@ -40,9 +36,11 @@ for manifest in "$SCRIPT_DIR"/examples/*/example.json; do
   fi
 done
 
-# ── Copy landing page + cover images ─────────────────────
-echo "🏠 Copying landing page..."
-cp "$SCRIPT_DIR/site/index.html" "$DIST_DIR/index.html"
+# ── Build landing site (React + Vite) ────────────────────
+echo "🏠 Building landing site..."
+cd "$SCRIPT_DIR/site"
+npm run build
+cp -r dist/* "$DIST_DIR/"
 
 for manifest in "$SCRIPT_DIR"/examples/*/example.json; do
   [ -f "$manifest" ] || continue

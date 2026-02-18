@@ -3,6 +3,10 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+echo "📦 Installing site dependencies..."
+cd "$SCRIPT_DIR/site"
+npm ci
+
 echo "📦 Installing dependencies for all examples..."
 
 for dir in "$SCRIPT_DIR"/examples/*/frontend; do

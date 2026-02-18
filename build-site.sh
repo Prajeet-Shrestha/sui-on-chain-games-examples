@@ -47,10 +47,11 @@ cp "$SCRIPT_DIR/site/index.html" "$DIST_DIR/index.html"
 for manifest in "$SCRIPT_DIR"/examples/*/example.json; do
   [ -f "$manifest" ] || continue
   EXAMPLE_DIR="$(dirname "$manifest")"
-  SLUG=$(python3 -c "import json; print(json.load(open('$manifest'))['slug'])")
+  DIR_NAME="$(basename "$EXAMPLE_DIR")"
 
   if [ -f "$EXAMPLE_DIR/cover.png" ]; then
-    cp "$EXAMPLE_DIR/cover.png" "$DIST_DIR/${SLUG}-cover.png"
+    mkdir -p "$DIST_DIR/examples/$DIR_NAME"
+    cp "$EXAMPLE_DIR/cover.png" "$DIST_DIR/examples/$DIR_NAME/cover.png"
   fi
 done
 

@@ -19,6 +19,7 @@ COUNT=0
 for manifest in "$SCRIPT_DIR"/examples/*/example.json; do
   [ -f "$manifest" ] || continue
   EXAMPLE_DIR="$(dirname "$manifest")"
+  DIR_NAME="$(basename "$EXAMPLE_DIR")"
 
   NAME=$(python3 -c "import json,sys; print(json.load(open('$manifest'))['name'])")
   SLUG=$(python3 -c "import json,sys; print(json.load(open('$manifest'))['slug'])")
@@ -34,11 +35,8 @@ for manifest in "$SCRIPT_DIR"/examples/*/example.json; do
   done
   TAGS_HTML+="            <span class=\"tag tag-free\">FREE</span>"
 
-  # Cover image: use cover.png from example dir
-  COVER_SRC="${SLUG}-cover.png"
-  if [ -f "$EXAMPLE_DIR/cover.png" ]; then
-    cp "$EXAMPLE_DIR/cover.png" "$SITE_DIR/$COVER_SRC"
-  fi
+  # Cover image: reference directly from example folder
+  COVER_SRC="../examples/${DIR_NAME}/cover.png"
 
   CARDS+="
       <a href=\"/${SLUG}/\" class=\"game-card\">

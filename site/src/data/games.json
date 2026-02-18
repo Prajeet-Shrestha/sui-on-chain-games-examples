@@ -82,5 +82,17 @@
     "description": "A fully on-chain Tetris game.",
     "hasFrontend": true,
     "cover": "/examples/tetris_game/cover.png"
+  },
+  {
+    "dirName": "virus_game",
+    "name": "Virus Game",
+    "slug": "virus-game",
+    "tags": [
+      "Puzzle",
+      "Strategy"
+    ],
+    "description": "Change your color to match neighboring cells and absorb them. Conquer the entire grid before you run out of moves.",
+    "hasFrontend": true,
+    "cover": "/examples/virus_game/cover.png"
   }
 ]

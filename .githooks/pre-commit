@@ -34,3 +34,17 @@ if [ $ERRORS -gt 0 ]; then
   echo "   Add base: '/<slug>/' to each vite.config.ts to fix."
   exit 1
 fi
+
+# ──────────────────────────────────────────────────────────
+#  Validate full site build
+# ──────────────────────────────────────────────────────────
+
+echo "🔨 Running build-site.sh..."
+if ! bash "$REPO_ROOT/build-site.sh"; then
+  echo ""
+  echo "🚫 Commit blocked: build-site.sh failed."
+  echo "   Fix the build errors above before committing."
+  exit 1
+fi
+
+echo "✅ All checks passed."

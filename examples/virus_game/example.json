@@ -1,0 +1,7 @@
+{
+  "name": "Virus Game",
+  "slug": "virus-game",
+  "tags": ["Puzzle", "Strategy"],
+  "description": "Change your color to match neighboring cells and absorb them. Conquer the entire grid before you run out of moves.",
+  "hasFrontend": true
+}

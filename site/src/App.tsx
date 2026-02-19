@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import GameCard, { Tag, OnChainBadge } from './components/GameCard';
 import games from './data/games.json';
 import type { Game } from './types';
@@ -94,6 +95,7 @@ export default function App() {
           </a>
         </div>
 
+        <Link to="/create" className="create-game-btn">🎮 Create a Game</Link>
         <a href="#" className="signin-btn">Sign in</a>
       </nav>
 

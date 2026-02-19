@@ -1,0 +1,11 @@
+{
+    "name": "Dear Santa",
+    "slug": "dear-santa",
+    "tags": [
+        "Heartfelt",
+        "Casual",
+        "Social"
+    ],
+    "description": "Write a letter to Santa and send it to the blockchain.",
+    "hasFrontend": true
+}

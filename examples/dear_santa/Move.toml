@@ -1,0 +1,13 @@
+[package]
+name = "dear_santa"
+edition = "2024.beta"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/mainnet", override = true }
+world = { git = "https://github.com/Prajeet-Shrestha/sui-game-engine.git", subdir = "world", rev = "main" }
+entity = { git = "https://github.com/Prajeet-Shrestha/sui-game-engine.git", subdir = "entity", rev = "main" }
+components = { git = "https://github.com/Prajeet-Shrestha/sui-game-engine.git", subdir = "components", rev = "main" }
+systems = { git = "https://github.com/Prajeet-Shrestha/sui-game-engine.git", subdir = "systems", rev = "main" }
+
+[addresses]
+dear_santa = "0x0"

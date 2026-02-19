@@ -1,3 +1,5 @@
+import { PhaserVirus } from './PhaserVirus';
+
 interface Props {
   onPlay: () => void;
 }
@@ -13,7 +15,9 @@ export function HomeScreen({ onPlay }: Props) {
       </div>
 
       <div className="home__content">
-        <div className="home__virus">🦠</div>
+        <div className="home__virus">
+          <PhaserVirus />
+        </div>
         <h1 className="home__title">VIRUS</h1>
         <p className="home__tagline">
           Infect. Spread. Dominate.

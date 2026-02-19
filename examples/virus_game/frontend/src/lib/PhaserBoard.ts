@@ -20,6 +20,10 @@ interface CellSprites {
     pupilL: Phaser.GameObjects.Graphics;
     pupilR: Phaser.GameObjects.Graphics;
     glow: Phaser.GameObjects.Graphics | null;
+    // Wobble state
+    bumpOffsets: number[]; // Random offsets for each bump
+    phaseOffset: number;   // Random phase for sine wave
+    wobbleEvent?: Phaser.Time.TimerEvent; // Active wobble loop
 }
 
 export class BoardScene extends Phaser.Scene {
@@ -92,12 +96,7 @@ export class BoardScene extends Phaser.Scene {
     ) {
         // Destroy old sprites
         this.cells.forEach((c) => {
-            c.bg.destroy();
-            c.eyeL.destroy();
-            c.eyeR.destroy();
-            c.pupilL.destroy();
-            c.pupilR.destroy();
-            c.glow?.destroy();
+            this.destroyCell(c);
         });
         this.cells = [];
 
@@ -153,6 +152,7 @@ export class BoardScene extends Phaser.Scene {
             if (justInfected) {
                 newlyInfected.push(i);
                 this.showEyes(cell);
+                this.startWobble(cell); // Start liquid animation
                 this.animateInfection(cell);
                 this.spawnParticles(cell);
 
@@ -184,17 +184,37 @@ export class BoardScene extends Phaser.Scene {
         isControlled: boolean,
         isVirusStart: boolean
     ): CellSprites {
-        const r = Math.min(6, this.cellSize * 0.12);
         const color = hexToNum(COLOR_PALETTE[colorIdx] ?? '#555555');
         const alpha = isControlled ? 1.0 : 0.55;
 
+        // Generate consistent random offsets for the organic shape
+        // 16 bumps (4 per side)
+        const bumpOffsets = Array.from({ length: 16 }, () => Math.random() * 0.4 + 0.8);
+        const phaseOffset = Math.random() * Math.PI * 2;
+
         // Background
         const bg = this.add.graphics();
-        bg.fillStyle(color, alpha);
-        bg.fillRoundedRect(x, y, this.cellSize, this.cellSize, r);
         bg.setData('x', x);
         bg.setData('y', y);
         bg.setData('colorIdx', colorIdx);
+
+        // Store wobble state
+        const cellData: Partial<CellSprites> = {
+            bumpOffsets,
+            phaseOffset,
+            bg,
+        };
+
+        // Draw initial state
+        if (isControlled) {
+            this.drawBlob(cellData as CellSprites, color, alpha, 0);
+        } else {
+            // Uncontrolled cells are simple rounded rects
+            const r = Math.min(6, this.cellSize * 0.12);
+            bg.fillStyle(color, alpha);
+            // Center the rect
+            bg.fillRoundedRect(x, y, this.cellSize, this.cellSize, r);
+        }
 
         // Eyes (hidden if not controlled)
         const eyeSize = Math.max(3, this.cellSize * 0.16);
@@ -234,10 +254,136 @@ export class BoardScene extends Phaser.Scene {
         // Glow for virus start
         let glow: Phaser.GameObjects.Graphics | null = null;
         if (isVirusStart && isControlled) {
-            glow = this.createGlow({ bg, eyeL, eyeR, pupilL, pupilR, glow: null });
+            glow = this.createGlow({ bg, eyeL, eyeR, pupilL, pupilR, glow: null } as any);
         }
 
-        return { bg, eyeL, eyeR, pupilL, pupilR, glow };
+        const cell: CellSprites = {
+            bg, eyeL, eyeR, pupilL, pupilR, glow,
+            bumpOffsets, phaseOffset
+        };
+
+        // Start wobble loop if controlled
+        if (isControlled) {
+            this.startWobble(cell);
+        }
+
+        return cell;
+    }
+
+    private destroyCell(cell: CellSprites) {
+        cell.wobbleEvent?.remove();
+        cell.bg.destroy();
+        cell.eyeL.destroy();
+        cell.eyeR.destroy();
+        cell.pupilL.destroy();
+        cell.pupilR.destroy();
+        cell.glow?.destroy();
+    }
+
+    /* ── Organic Blob Drawing ───────────────────── */
+
+    private drawBlob(
+        cell: CellSprites,
+        color: number,
+        alpha: number,
+        time: number
+    ) {
+        const g = cell.bg;
+        const x = g.getData('x') as number;
+        const y = g.getData('y') as number;
+        const size = this.cellSize;
+        const half = size / 2;
+        const cx = x + half;
+        const cy = y + half;
+
+        // Base radius for the "squarish" blob
+        g.clear();
+        g.fillStyle(color, alpha);
+
+        const points: { x: number, y: number }[] = [];
+        const bumpsPerSide = 4;
+        const totalPoints = bumpsPerSide * 4;
+
+        // Radius of the base square from center to edge (approx)
+        const baseR = size * 0.55;
+
+        // Generate points around the perimeter
+        for (let i = 0; i < totalPoints; i++) {
+            // Angle around the circle
+            const angle = (Math.PI * 2 * i) / totalPoints - Math.PI / 4; // Start at corner
+
+            // Square-ish mapping: project circle to square edge
+            // A simple way is to use max(|cos|, |sin|) approach or just place points along the perimeter
+            const sec = 1 / Math.max(Math.abs(Math.cos(angle)), Math.abs(Math.sin(angle)));
+            const squareR = Math.min(baseR * sec, baseR * 1.4); // Clamp corner spikes
+
+            // Add organic wobble (Water-like chaos)
+            // Superimpose 3 sine waves with different frequencies and phases
+            const t = time * 0.005;
+            const offset = cell.bumpOffsets[i] ?? 1;
+
+            // Primary slow wave (breathing)
+            const w1 = Math.sin(t * 1.0 + cell.phaseOffset + i * 0.5) * 2.5;
+            // Secondary faster wave (ripples)
+            const w2 = Math.sin(t * 2.3 + i * 1.5) * 1.5;
+            // Tertiary high-freq noise (jitter)
+            const w3 = Math.sin(t * 4.7 + i * 3.0) * 0.8;
+
+            const wobble = w1 + w2 + w3;
+
+            // Add static bumpiness (some bumps bigger than others)
+            const bumpiness = (offset - 1) * 4;
+
+            // Calculate final radius with more dynamic range
+            const r = Math.min(squareR + wobble + bumpiness, size * 0.70); // Cap max size
+
+            const px = cx + Math.cos(angle) * r;
+            const py = cy + Math.sin(angle) * r;
+            points.push({ x: px, y: py });
+        }
+
+        // Draw smooth curve through points using a Path object
+        const len = points.length;
+        const pLast = points[len - 1];
+        const pFirst = points[0];
+
+        const path = new Phaser.Curves.Path((pLast.x + pFirst.x) / 2, (pLast.y + pFirst.y) / 2);
+
+        for (let i = 0; i < len; i++) {
+            const p = points[i];
+            const pNext = points[(i + 1) % len];
+            const midX = (p.x + pNext.x) / 2;
+            const midY = (p.y + pNext.y) / 2;
+            path.quadraticBezierTo(p.x, p.y, midX, midY);
+        }
+
+        path.closePath();
+        // Resolution 32 for smooth filled shape
+        g.fillPoints(path.getPoints(32), true);
+    }
+
+    /* ── Wobble Loop ────────────────────────────── */
+
+    private startWobble(cell: CellSprites) {
+        if (cell.wobbleEvent) return;
+
+        cell.wobbleEvent = this.time.addEvent({
+            delay: 40, // ~25fps update for liquid feel
+            loop: true,
+            callback: () => {
+                const colorIdx = cell.bg.getData('colorIdx') as number;
+                const color = hexToNum(COLOR_PALETTE[colorIdx] ?? '#555555');
+                const time = this.time.now;
+                this.drawBlob(cell, color, 1.0, time);
+            }
+        });
+    }
+
+    private stopWobble(cell: CellSprites) {
+        if (cell.wobbleEvent) {
+            cell.wobbleEvent.remove();
+            cell.wobbleEvent = undefined;
+        }
     }
 
     /* ── Googly eye jiggle ──────────────────────── */
@@ -324,18 +470,25 @@ export class BoardScene extends Phaser.Scene {
         const color = hexToNum(COLOR_PALETTE[colorIdx] ?? '#555555');
         const alpha = isControlled ? 1.0 : 0.55;
 
-        cell.bg.clear();
-        cell.bg.fillStyle(color, alpha);
-        cell.bg.fillRoundedRect(x, y, this.cellSize, this.cellSize, r);
+        // Update data
         cell.bg.setData('colorIdx', colorIdx);
+
+        // If controlled, draw blob. If not, draw rect.
+        if (isControlled) {
+            this.drawBlob(cell, color, alpha, this.time.now);
+            // Ensure wobble is running if not already
+            this.startWobble(cell);
+        } else {
+            cell.bg.clear();
+            cell.bg.fillStyle(color, alpha);
+            cell.bg.fillRoundedRect(x, y, this.cellSize, this.cellSize, r);
+            this.stopWobble(cell);
+        }
     }
 
     /* ── Smooth color morph for existing cells ─── */
 
     private morphCellColor(cell: CellSprites, targetColorIdx: number) {
-        const x = cell.bg.getData('x') as number;
-        const y = cell.bg.getData('y') as number;
-        const r = Math.min(6, this.cellSize * 0.12);
         const oldColorIdx = cell.bg.getData('colorIdx') as number;
         const oldColor = Phaser.Display.Color.HexStringToColor(
             COLOR_PALETTE[oldColorIdx] ?? '#555555'
@@ -343,6 +496,9 @@ export class BoardScene extends Phaser.Scene {
         const newColor = Phaser.Display.Color.HexStringToColor(
             COLOR_PALETTE[targetColorIdx] ?? '#555555'
         );
+
+        // Stop wobble loop temporarily so the tween has full control
+        this.stopWobble(cell);
 
         this.tweens.addCounter({
             from: 0,
@@ -362,12 +518,12 @@ export class BoardScene extends Phaser.Scene {
                 );
                 const blended = Phaser.Display.Color.GetColor(rr, gg, bb);
 
-                cell.bg.clear();
-                cell.bg.fillStyle(blended, 1.0);
-                cell.bg.fillRoundedRect(x, y, this.cellSize, this.cellSize, r);
+                this.drawBlob(cell, blended, 1.0, this.time.now);
             },
             onComplete: () => {
                 cell.bg.setData('colorIdx', targetColorIdx);
+                // Resume wobble
+                this.startWobble(cell);
             },
         });
     }

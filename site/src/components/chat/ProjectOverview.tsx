@@ -1,4 +1,7 @@
-import { FiCheckCircle, FiCircle, FiLoader, FiPlay, FiUploadCloud, FiShare2, FiExternalLink, FiCode, FiLayout, FiCpu, FiBox, FiZap, FiFileText, FiTarget, FiUsers, FiLayers } from 'react-icons/fi';
+import { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import { FiCheckCircle, FiLoader, FiPlay, FiUploadCloud, FiShare2, FiExternalLink, FiCode, FiLayout, FiCpu, FiBox, FiZap, FiFileText } from 'react-icons/fi';
+import type { DocFile } from '../../pages/ChatPage';
 
 type ProjectStatus = 'idle' | 'adding_code' | 'building' | 'debugging' | 'deploying' | 'ready';
 
@@ -6,6 +9,9 @@ interface ProjectOverviewProps {
   name: string;
   status: ProjectStatus;
   fileCount: number;
+  docs: DocFile[];
+  isProjectPlayable: boolean;
+  isProjectBuildable: boolean;
   onPlayGame: () => void;
 }
 
@@ -59,10 +65,11 @@ function ProgressRing({ percent }: { percent: number }) {
   );
 }
 
-export default function ProjectOverview({ name, status, fileCount, onPlayGame }: ProjectOverviewProps) {
+export default function ProjectOverview({ name, status, fileCount, docs, isProjectPlayable, isProjectBuildable, onPlayGame }: ProjectOverviewProps) {
   const currentStep = STATUS_TO_STEP[status];
   const percent = (currentStep / STEPS.length) * 100;
   const featsDone = FEATURES.filter(f => f.done).length;
+  const [activeDoc, setActiveDoc] = useState(0);
 
   return (
     <div className="project-overview">
@@ -75,7 +82,39 @@ export default function ProjectOverview({ name, status, fileCount, onPlayGame }:
           <div className="po-chips">
             <span className="po-chip"><FiCode size={10} /> {fileCount} files</span>
             <span className="po-chip"><FiCheckCircle size={10} /> {featsDone}/{FEATURES.length} features</span>
+            {docs.length > 0 && <span className="po-chip"><FiFileText size={10} /> {docs.length} docs</span>}
           </div>
+        </div>
+      </div>
+      {/* Actions */}
+      <div className="po-actions">
+        <button
+          className="po-action-btn primary"
+          onClick={onPlayGame}
+          disabled={!isProjectPlayable}
+          style={!isProjectPlayable ? { opacity: 0.45, cursor: 'not-allowed' } : undefined}
+        >
+          <FiPlay size={14} /> Play Game
+        </button>
+        <button
+          className="po-action-btn secondary"
+          disabled={!isProjectBuildable}
+          style={!isProjectBuildable ? { opacity: 0.45, cursor: 'not-allowed' } : undefined}
+        >
+          <FiUploadCloud size={14} /> Deploy to Testnet
+        </button>
+        <div className="po-action-row">
+          <button className="po-action-btn ghost">
+            <FiShare2 size={13} /> Share
+          </button>
+          <a
+            href="https://sui-on-chain-games-examples.vercel.app/sokoban/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="po-action-btn ghost"
+          >
+            <FiExternalLink size={13} /> Open Live
+          </a>
         </div>
       </div>
 
@@ -104,100 +143,27 @@ export default function ProjectOverview({ name, status, fileCount, onPlayGame }:
         </div>
       </div>
 
-      {/* Game Design Document */}
-      <div className="po-section">
-        <h3 className="po-section-title">Game Design Document</h3>
-        <div className="po-gdd">
-          <div className="po-gdd-card">
-            <div className="po-gdd-card-header">
-              <FiFileText size={14} />
-              <span>Overview</span>
-            </div>
-            <p className="po-gdd-text">
-              A classic Sokoban puzzle game built fully on-chain. Players push crates onto target locations in a warehouse grid. 
-              Each move is recorded as an on-chain transaction, ensuring fully verifiable gameplay.
-            </p>
+      {/* Documents */}
+      {docs.length > 0 && (
+        <div className="po-section po-section-grow">
+          <h3 className="po-section-title">Documents</h3>
+          <div className="po-doc-tabs">
+            {docs.map((doc, i) => (
+              <button
+                key={i}
+                className={`po-doc-tab${activeDoc === i ? ' active' : ''}`}
+                onClick={() => setActiveDoc(i)}
+              >
+                <FiFileText size={11} />
+                {doc.title}
+              </button>
+            ))}
           </div>
-
-          <div className="po-gdd-card">
-            <div className="po-gdd-card-header">
-              <FiTarget size={14} />
-              <span>Core Mechanics</span>
-            </div>
-            <ul className="po-gdd-list">
-              <li>Grid-based movement (up, down, left, right)</li>
-              <li>Crate pushing — one crate at a time</li>
-              <li>Win condition: all crates on targets</li>
-              <li>Move counter & undo support</li>
-              <li>Multiple puzzle levels with difficulty progression</li>
-            </ul>
-          </div>
-
-          <div className="po-gdd-card">
-            <div className="po-gdd-card-header">
-              <FiUsers size={14} />
-              <span>Player Flow</span>
-            </div>
-            <ol className="po-gdd-list ordered">
-              <li>Connect Sui wallet</li>
-              <li>Select level from level picker</li>
-              <li>Solve puzzle by pushing all crates to targets</li>
-              <li>Score saved on-chain with move count</li>
-              <li>Unlock next level on completion</li>
-            </ol>
-          </div>
-
-          <div className="po-gdd-card">
-            <div className="po-gdd-card-header">
-              <FiLayers size={14} />
-              <span>Tech Stack</span>
-            </div>
-            <div className="po-gdd-tags">
-              <span className="po-gdd-tag">Sui Move</span>
-              <span className="po-gdd-tag">React</span>
-              <span className="po-gdd-tag">TypeScript</span>
-              <span className="po-gdd-tag">@mysten/dapp-kit</span>
-              <span className="po-gdd-tag">Entity-Component-System</span>
-            </div>
+          <div className="po-doc-content">
+            <ReactMarkdown>{docs[activeDoc].content}</ReactMarkdown>
           </div>
         </div>
-      </div>
-
-      {/* Features */}
-      <div className="po-section">
-        <h3 className="po-section-title">Features</h3>
-        <div className="po-features">
-          {FEATURES.map((f, i) => (
-            <div key={i} className={`po-feature${f.done ? ' done' : ''}`}>
-              {f.done ? <FiCheckCircle size={13} /> : <FiCircle size={13} />}
-              <span>{f.label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div className="po-actions">
-        <button className="po-action-btn primary" onClick={onPlayGame}>
-          <FiPlay size={14} /> Play Game
-        </button>
-        <button className="po-action-btn secondary">
-          <FiUploadCloud size={14} /> Deploy to Testnet
-        </button>
-        <div className="po-action-row">
-          <button className="po-action-btn ghost">
-            <FiShare2 size={13} /> Share
-          </button>
-          <a
-            href="https://sui-on-chain-games-examples.vercel.app/sokoban/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="po-action-btn ghost"
-          >
-            <FiExternalLink size={13} /> Open Live
-          </a>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

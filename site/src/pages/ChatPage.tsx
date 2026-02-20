@@ -6,7 +6,8 @@ import CodeViewer from '../components/chat/CodeViewer';
 import ProjectOverview from '../components/chat/ProjectOverview';
 import ChatMessage, { ActivityIndicator } from '../components/chat/ChatMessage';
 import type { Message, AiActivity } from '../components/chat/ChatMessage';
-import { MOCK_FILES, buildFileTree } from '../data/mockProject';
+import { SOKOBAN_FILES } from '../data/sokobanProject';
+import { buildFileTree } from '../data/mockProject';
 import type { FileNode } from '../data/mockProject';
 import { VscFiles, VscBug } from 'react-icons/vsc';
 import { FiPause, FiEdit3, FiPackage, FiRadio, FiCheckCircle, FiZap, FiPlay, FiX, FiExternalLink } from 'react-icons/fi';
@@ -23,12 +24,20 @@ const STATUS_CONFIG: Record<ProjectStatus, { label: string; color: string; icon:
   ready:       { label: 'Ready to play',               color: '#4ade80', icon: <FiCheckCircle size={12} /> },
 };
 
+export interface DocFile {
+  title: string;
+  content: string;
+}
+
 interface Session {
   id: string;
   name: string;
   messages: Message[];
-  projectFiles: typeof MOCK_FILES;
+  projectFiles: typeof SOKOBAN_FILES;
   status: ProjectStatus;
+  docs: DocFile[];
+  isProjectPlayable: boolean;
+  isProjectBuildable: boolean;
 }
 
 const AI_RESPONSES = [
@@ -57,12 +66,96 @@ function createSession(name?: string): Session {
     ],
     projectFiles: [],
     status: 'idle',
+    docs: [],
+    isProjectPlayable: false,
+    isProjectBuildable: false,
   };
 }
 
 export default function ChatPage() {
   const [sessions, setSessions] = useState<Session[]>([
-    { ...createSession('Tic Tac Toe'), projectFiles: MOCK_FILES, status: 'ready' },
+    {
+      ...createSession('Sokoban'),
+      projectFiles: SOKOBAN_FILES,
+      status: 'ready',
+      isProjectPlayable: true,
+      isProjectBuildable: true,
+      docs: [
+        {
+          title: 'Game Design',
+          content: `# Sokoban — On-Chain Puzzle Game
+
+## Overview
+A classic Sokoban puzzle game built fully on-chain with Sui Move. Players push crates onto target locations in a warehouse grid. Each move is recorded as an on-chain transaction.
+
+## Core Mechanics
+- **Grid-based movement** — up, down, left, right
+- **Crate pushing** — one crate at a time, cannot pull
+- **Win condition** — all crates placed on target tiles
+- **Move counter** — tracks total moves per level
+- **Undo support** — revert last move on-chain
+
+## Difficulty Progression
+| Level | Grid Size | Crates | Complexity |
+|-------|-----------|--------|------------|
+| 1-3   | 5×5       | 1-2    | Tutorial   |
+| 4-7   | 7×7       | 2-3    | Easy       |
+| 8-12  | 9×9       | 3-4    | Medium     |
+| 13+   | 11×11     | 4+     | Hard       |`,
+        },
+        {
+          title: 'Player Flow',
+          content: `# Player Flow
+
+## Getting Started
+1. Connect your **Sui wallet** (Slush, Sui Wallet, or ZK Login)
+2. Select a level from the **level picker**
+3. Solve the puzzle by pushing crates to targets
+4. Your score (move count) is **saved on-chain**
+5. Unlock the **next level** on completion
+
+## Wallet Integration
+- Uses \`@mysten/dapp-kit\` for wallet connection
+- Each move calls \`make_move()\` on the smart contract
+- Gas fees are minimal (~0.001 SUI per move)
+
+## Scoring
+- **Best score** = fewest moves to complete a level
+- Scores are stored in a shared object on-chain
+- Global leaderboard ranks players by total stars`,
+        },
+        {
+          title: 'Technical Architecture',
+          content: `# Technical Architecture
+
+## Smart Contract (Move)
+\`\`\`
+tic_tac_toe/
+├── Move.toml
+└── sources/
+    ├── game.move        # Core game logic
+    └── tests.move       # Unit tests
+\`\`\`
+
+## Frontend (React)
+\`\`\`
+ui/
+├── package.json
+├── src/
+│   ├── App.tsx          # Game board component
+│   ├── main.tsx         # Entry point w/ wallet provider
+│   └── index.css        # Styles
+└── index.html
+\`\`\`
+
+## Key Dependencies
+- **Sui Move** — on-chain game state & logic
+- **React 19** — UI rendering
+- **@mysten/dapp-kit** — wallet connect & TX signing
+- **Entity-Component-System** — game architecture pattern`,
+        },
+      ],
+    },
   ]);
   const [activeSessionId, setActiveSessionId] = useState(sessions[0].id);
   const [inputValue, setInputValue] = useState('');
@@ -70,7 +163,7 @@ export default function ChatPage() {
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [expandedDirs, setExpandedDirs] = useState<Set<string>>(new Set(['sources', 'ui', 'ui/src']));
   const [chatWidth, setChatWidth] = useState(420);
-  const [showPreview, setShowPreview] = useState(true);
+  const [showPreview, setShowPreview] = useState(false);
   const [ideTab, setIdeTab] = useState<'overview' | 'code'>('overview');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -188,7 +281,7 @@ export default function ChatPage() {
             ? {
                 ...s,
                 messages: [...s.messages, aiMsg],
-                projectFiles: MOCK_FILES,
+                projectFiles: SOKOBAN_FILES,
               }
             : s,
         ),
@@ -295,6 +388,9 @@ export default function ChatPage() {
               name={activeSession.name}
               status={activeSession.status}
               fileCount={activeSession.projectFiles.length}
+              docs={activeSession.docs}
+              isProjectPlayable={activeSession.isProjectPlayable}
+              isProjectBuildable={activeSession.isProjectBuildable}
               onPlayGame={() => { setShowPreview(true); setIdeTab('code'); }}
             />
           ) : (

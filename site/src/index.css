@@ -950,6 +950,10 @@ html, body { margin: 0; padding: 0; background-color: #000; }
   flex-direction: column;
   gap: .5rem;
 }
+.po-section-grow {
+  flex: 1;
+  min-height: 0;
+}
 .po-section-title {
   font-size: .65rem;
   font-weight: 700;
@@ -1064,69 +1068,150 @@ html, body { margin: 0; padding: 0; background-color: #000; }
   50% { opacity: .6; }
 }
 
-/* Game Design Document */
-.po-gdd {
+/* Document Tabs + Markdown Viewer */
+.po-doc-tabs {
   display: flex;
-  flex-direction: column;
-  gap: .375rem;
+  gap: 2px;
+  background: #111113;
+  border-radius: 8px;
+  padding: 3px;
+  border: 1px solid #1e1f23;
 }
-.po-gdd-card {
-  padding: .625rem .75rem;
+.po-doc-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: .375rem .5rem;
+  font-size: .62rem;
+  font-weight: 700;
+  font-family: inherit;
+  color: #4b515b;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.po-doc-tab:hover {
+  color: #89919f;
+  background: rgba(108,92,231,.04);
+}
+.po-doc-tab.active {
+  color: #e0e2e6;
+  background: rgba(108,92,231,.12);
+}
+
+.po-doc-content {
+  padding: .75rem;
   border-radius: 8px;
   border: 1px solid #1e1f23;
   background: #111113;
-  transition: border-color .2s;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 500px;
 }
-.po-gdd-card:hover {
-  border-color: #2a2d35;
+
+/* Markdown rendering styles */
+.po-doc-content h1 {
+  font-size: .85rem;
+  font-weight: 800;
+  color: #e0e2e6;
+  margin: 0 0 .5rem;
+  padding-bottom: .375rem;
+  border-bottom: 1px solid #1e1f23;
 }
-.po-gdd-card-header {
-  display: flex;
-  align-items: center;
-  gap: .375rem;
+.po-doc-content h2 {
   font-size: .72rem;
   font-weight: 700;
   color: #a29bfe;
-  margin-bottom: .375rem;
+  margin: .75rem 0 .25rem;
 }
-.po-gdd-text {
+.po-doc-content h3 {
   font-size: .68rem;
-  color: #6c7584;
-  line-height: 1.55;
-  margin: 0;
+  font-weight: 700;
+  color: #89919f;
+  margin: .5rem 0 .2rem;
 }
-.po-gdd-list {
-  margin: 0;
-  padding-left: 1.1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.po-gdd-list li {
+.po-doc-content p {
   font-size: .66rem;
   color: #6c7584;
-  line-height: 1.5;
+  line-height: 1.6;
+  margin: .25rem 0;
 }
-.po-gdd-list li::marker {
+.po-doc-content ul, .po-doc-content ol {
+  margin: .25rem 0;
+  padding-left: 1.1rem;
+}
+.po-doc-content li {
+  font-size: .66rem;
+  color: #6c7584;
+  line-height: 1.55;
+  margin-bottom: 2px;
+}
+.po-doc-content li::marker {
   color: #343940;
 }
-.po-gdd-list.ordered li::marker {
+.po-doc-content ol li::marker {
   color: #6c5ce7;
   font-weight: 700;
 }
-.po-gdd-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .25rem;
-}
-.po-gdd-tag {
-  font-size: .58rem;
+.po-doc-content strong {
+  color: #c2c6cd;
   font-weight: 700;
-  color: #89919f;
-  background: rgba(255,255,255,.04);
+}
+.po-doc-content code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: .6rem;
+  color: #a29bfe;
+  background: rgba(108,92,231,.08);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.po-doc-content pre {
+  background: #0a0a0c;
   border: 1px solid #1e1f23;
-  border-radius: 4px;
-  padding: 2px 7px;
+  border-radius: 6px;
+  padding: .5rem .75rem;
+  margin: .375rem 0;
+  overflow-x: auto;
+}
+.po-doc-content pre code {
+  background: none;
+  padding: 0;
+  color: #89919f;
+  font-size: .6rem;
+  line-height: 1.5;
+}
+.po-doc-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: .375rem 0;
+  font-size: .62rem;
+}
+.po-doc-content th {
+  text-align: left;
+  font-weight: 700;
+  color: #a29bfe;
+  padding: .25rem .5rem;
+  border-bottom: 1px solid #1e1f23;
+}
+.po-doc-content td {
+  color: #6c7584;
+  padding: .25rem .5rem;
+  border-bottom: 1px solid rgba(30,31,35,.5);
+}
+.po-doc-content blockquote {
+  border-left: 3px solid #6c5ce7;
+  margin: .375rem 0;
+  padding: .25rem .75rem;
+  background: rgba(108,92,231,.04);
+  border-radius: 0 6px 6px 0;
+}
+.po-doc-content blockquote p {
+  color: #89919f;
 }
 
 /* Features */
@@ -1153,12 +1238,9 @@ html, body { margin: 0; padding: 0; background-color: #000; }
 
 /* Actions */
 .po-actions {
-  margin-top: auto;
   display: flex;
   flex-direction: column;
   gap: .375rem;
-  padding-top: .75rem;
-  border-top: 1px solid #1e1f23;
 }
 .po-action-btn {
   display: flex;

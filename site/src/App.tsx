@@ -1,6 +1,10 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useCurrentAccount } from '@mysten/dapp-kit';
 import GameCard, { Tag, OnChainBadge } from './components/GameCard';
+import AuthButton from './components/AuthButton';
+import { useUserProfile } from './hooks/useUserProfile';
+import { isWhitelisted } from './config/whitelist';
 import games from './data/games.json';
 import type { Game } from './types';
 
@@ -18,6 +22,10 @@ export default function App() {
   const [displayIdx, setDisplayIdx] = useState(0);
   const [slideClass, setSlideClass] = useState('');
   const isAnimating = useRef(false);
+  const currentAccount = useCurrentAccount();
+  const { profile } = useUserProfile();
+  const userAddress = currentAccount?.address || profile?.address;
+  const canCreate = isWhitelisted(userAddress);
 
   const goToSlide = useCallback((next: number) => {
     if (isAnimating.current || next === heroIdx) return;
@@ -95,8 +103,10 @@ export default function App() {
           </a>
         </div>
 
-        <Link to="/create" className="create-game-btn">🎮 Create a Game</Link>
-        <a href="#" className="signin-btn">Sign in</a>
+        {canCreate && (
+          <Link to="/create" className="create-game-btn">Create a Game</Link>
+        )}
+        <AuthButton />
       </nav>
 
       {/* ── Layout ── */}

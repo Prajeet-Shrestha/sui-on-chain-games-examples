@@ -11,6 +11,15 @@ if (fs.existsSync(gamesPath)) {
 }
 
 export default defineConfig({
+    server: {
+        headers: {
+            // Required for Enoki's popup-based OAuth flow.
+            // The SDK polls popup.closed and popup.location.hash to detect
+            // when Google OAuth completes. Without this, COOP blocks those
+            // cross-origin property accesses and the flow silently fails.
+            'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
+        },
+    },
     plugins: [
         react(),
         // Serve game dist files at /<slug>/ routes during dev

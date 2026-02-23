@@ -1,13 +1,15 @@
 // collect-games.mjs
 // Reads all examples/*/example.json manifests and writes
-// a consolidated src/data/games.json for the React app.
+// a consolidated games.json into the dist/ directory.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const examplesDir = path.resolve(__dirname, '../../examples');
-const outFile = path.resolve(__dirname, '../src/data/games.json');
+const root = path.resolve(__dirname, '..');
+const examplesDir = path.join(root, 'examples');
+const distDir = path.join(root, 'dist');
+const outFile = path.join(distDir, 'api', 'games.json');
 
 const dirs = fs.readdirSync(examplesDir, { withFileTypes: true })
   .filter(d => d.isDirectory())
@@ -30,10 +32,10 @@ for (const dir of dirs) {
     tags: manifest.tags,
     description: manifest.description,
     hasFrontend: manifest.hasFrontend ?? false,
-    cover: hasCover ? `/examples/${dir}/cover.png` : null,
+    cover: hasCover ? `/${manifest.slug}/cover.png` : null,
   });
 }
 
 fs.mkdirSync(path.dirname(outFile), { recursive: true });
 fs.writeFileSync(outFile, JSON.stringify(games, null, 2));
-console.log(`✅ Collected ${games.length} game(s) → src/data/games.json`);
+console.log(`✅ Collected ${games.length} game(s) → dist/games.json`);

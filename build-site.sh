@@ -54,28 +54,33 @@ if [ "$FAILED" -ne 0 ]; then
   exit 1
 fi
 
-# ── Build landing site (React + Vite) ────────────────────
-echo "🏠 Building landing site..."
-cd "$SCRIPT_DIR/site"
-npm run build
-cp -r dist/* "$DIST_DIR/"
+# ── Copy landing page (simple HTML redirect) ─────────────
+echo "🏠 Copying landing page..."
+cp "$SCRIPT_DIR/index.html" "$DIST_DIR/index.html"
 
+# ── Copy cover images ────────────────────────────────────
 for manifest in "$SCRIPT_DIR"/examples/*/example.json; do
   [ -f "$manifest" ] || continue
   EXAMPLE_DIR="$(dirname "$manifest")"
-  DIR_NAME="$(basename "$EXAMPLE_DIR")"
+  SLUG=$(python3 -c "import json; print(json.load(open('$manifest'))['slug'])")
 
   if [ -f "$EXAMPLE_DIR/cover.png" ]; then
-    mkdir -p "$DIST_DIR/examples/$DIR_NAME"
-    cp "$EXAMPLE_DIR/cover.png" "$DIST_DIR/examples/$DIR_NAME/cover.png"
+    mkdir -p "$DIST_DIR/$SLUG"
+    cp "$EXAMPLE_DIR/cover.png" "$DIST_DIR/$SLUG/cover.png"
+    echo "🖼️  Copied cover.png → /$SLUG/cover.png"
   fi
 done
+
+# ── Generate games.json ──────────────────────────────────
+echo "📋 Generating games.json..."
+node "$SCRIPT_DIR/scripts/collect-games.mjs"
 
 # ── Summary ──────────────────────────────────────────────
 echo ""
 echo "✅ Build complete! Output: $DIST_DIR"
 echo ""
-echo "   /                → Landing page"
+echo "   /                → Redirect (google.com placeholder)"
+echo "   /api/games.json  → Game list"
 for manifest in "$SCRIPT_DIR"/examples/*/example.json; do
   [ -f "$manifest" ] || continue
   SLUG=$(python3 -c "import json; print(json.load(open('$manifest'))['slug'])")

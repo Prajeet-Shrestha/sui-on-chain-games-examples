@@ -1,0 +1,11 @@
+{
+    "name": "Bluffers",
+    "slug": "bluffers",
+    "tags": [
+        "Multiplayer",
+        "Card Game",
+        "Bluffing"
+    ],
+    "description": "A fully on-chain multiplayer bluffing card game. Play cards face-down, call liars, and survive Russian Roulette — every move recorded on Sui.",
+    "hasFrontend": true
+}

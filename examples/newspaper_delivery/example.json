@@ -1,0 +1,11 @@
+{
+    "name": "City Delivery",
+    "slug": "newspaper-delivery",
+    "tags": [
+        "Arcade",
+        "Casual",
+        "Timing"
+    ],
+    "description": "Cycle through city neighborhoods delivering packages. Time your throws perfectly to score big — every delivery recorded on-chain via PTB batching.",
+    "hasFrontend": true
+}
